@@ -5,6 +5,7 @@
   max-width: 1100px;
   margin: auto;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .role-assignment-header h2 {
@@ -51,7 +52,7 @@
 
 .role-search-wrapper {
   flex: 1;
-  min-width: 280px;
+  min-width: 220px;
 }
 
 .role-top-assign-btn {
@@ -318,4 +319,41 @@ html.dark-theme .btn-cancel {
 
 html.dark-theme .btn-cancel:hover {
   background: #475569 !important;
+}
+
+/* ==========================================
+   RESPONSIVE PARA CELULARES
+   ========================================== */
+
+@media (max-width: 768px) {
+  .role-assignment-container {
+    padding: 14px 10px !important;
+    max-width: 100% !important;
+  }
+
+  .role-assignment-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .role-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  .role-search-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .role-top-assign-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .registro-form,
+  .role-search-modal-content {
+    padding: 16px;
+  }
 }
