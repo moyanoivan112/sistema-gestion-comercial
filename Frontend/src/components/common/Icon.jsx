@@ -1,15 +1,24 @@
 import React from "react";
 
+const STROKE_ICONS = new Set(["MoonStar", "Sun"]);
+
 export default function Icon({ name, size = 20, color }) {
+  const isStrokeIcon = STROKE_ICONS.has(name);
+  const resolvedColor = color || "currentColor";
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       height={`${size}px`}
       viewBox="0 0 24 24"
       width={`${size}px`}
-      fill={color || "currentColor"} // 👈 Si no se le pasa un color específico, hereda el color del texto actual
+      fill={isStrokeIcon ? "none" : resolvedColor}
+      stroke={isStrokeIcon ? resolvedColor : undefined}
+      strokeWidth={isStrokeIcon ? 2 : undefined}
+      strokeLinecap={isStrokeIcon ? "round" : undefined}
+      strokeLinejoin={isStrokeIcon ? "round" : undefined}
     >
-      <rect fill="none" height="24" width="24" />
+      {!isStrokeIcon && <rect fill="none" height="24" width="24" />}
       {/* 1. Agregar Hermano */}
       {name === "agregar-hermano" && (
         <path d="M13,8c0-2.21-1.79-4-4-4S5,5.79,5,8s1.79,4,4,4S13,10.21,13,8z M15,10v2h3v3h2v-3h3v-2h-3V7h-2v3H15z M1,18v2h16v-2 c0-2.66-5.33-4-8-4S1,15.34,1,18z" />
@@ -107,6 +116,28 @@ export default function Icon({ name, size = 20, color }) {
       {/* 22. OpenDoor */}
       {name === "OpenDoor" && (
         <path d="M11,13q0.43,0 0.71-0.29Q12,12.43 12,12t-0.29-0.71T11,11t-0.71,0.29T10,12t0.29,0.71T11,13ZM7,21V19l6-1V6.88Q13,6.5 12.78,6.2T12.2,5.85L7,5V3l5.5,0.9q1.1,0.2 1.8,1.03T15,6.85v12.8L7,21ZM3,21V19H5V5Q5,4.15 5.59,3.57T7,3H17q0.85,0 1.43,0.57T19,5V19h2v2H3Zm4-2H17V5H7V19Z" />
+      )}
+      {/* 23. MoonStar */}
+      {name === "MoonStar" && (
+        <>
+          <path d="M18 5h4" />
+          <path d="M20 3v4" />
+          <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+        </>
+      )}
+      {/* 24. Sun */}
+      {name === "Sun" && (
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </>
       )}
     </svg>
   );
