@@ -1,8 +1,7 @@
 // src/pages/Statistics/components/AttendanceTrendSection.jsx
 import React, { useState } from "react";
 import Icon from "../../../components/common/Icon";
-import StatCard from "../../Dashboard/components/StatCard";
-import AsistenciaModal from "../../Dashboard/components/AsistenciaModal"; // 👈 1. Importamos el modal interactivo
+import AsistenciaModal from "../../Dashboard/components/AsistenciaModal";
 import {
   AreaChart,
   Area,
@@ -21,31 +20,72 @@ export default function AttendanceTrendSection({
   const [ministerioSeleccionado, setMinisterioSeleccionado] = useState("todos");
   const [rangoTiempo, setRangoTiempo] = useState("6semanas");
   const [reunionSeleccionadaModal, setReunionSeleccionadaModal] =
-    useState(null); // 👈 2. Estado para el modal
+    useState(null);
 
-  const ministeriosEspecificos = [
-    "Cena del Señor",
-    "Reunión de Jóvenes",
-    "Escuela Bíblica",
-    "Pre Adolescentes",
+  const variantesTarjeta = [
+    "primary",
+    "success",
+    "info",
+    "warning",
+    "purple",
+    "teal",
   ];
 
-  // 1. Filtrar las tarjetas superiores (solo las 4 específicas)
-  const resumenAsistencias = Object.entries(attendanceData || {})
-    .filter(([nombre]) => ministeriosEspecificos.includes(nombre))
-    .map(([nombreMinisterio, rawHistorial]) => {
+  // Construye los datos de última asistencia y variación para cada reunión/ministerio
+  const resumenAsistencias = Object.entries(attendanceData || {}).map(
+    ([nombreMinisterio, rawHistorial], index) => {
       const historial = Array.isArray(rawHistorial)
         ? rawHistorial
         : rawHistorial?.historial || [];
-      const ultimoRegistro =
-        historial && historial.length > 0
-          ? historial[historial.length - 1].asistentes
-          : 0;
+
+      const len = historial.length;
+      const actual = len > 0 ? Number(historial[len - 1].asistentes) || 0 : 0;
+      const anterior =
+        len > 1 ? Number(historial[len - 2].asistentes) || 0 : actual;
+      const diffRaw = actual - anterior;
+
+      let tendencia = "igual";
+      if (len > 1 && diffRaw > 0) tendencia = "subio";
+      else if (len > 1 && diffRaw < 0) tendencia = "bajo";
+
       return {
         nombre: nombreMinisterio,
-        actual: ultimoRegistro,
+        actual,
+        diferencia: Math.abs(diffRaw),
+        tendencia,
+        variantClass: variantesTarjeta[index % variantesTarjeta.length],
       };
-    });
+    },
+  );
+
+  const renderAttendanceStatCard = (item) => {
+    let detailClass = "stat-detail-neutral";
+    let textoDetalle = "Se mantuvo igual que la reunión anterior";
+
+    if (item.tendencia === "subio") {
+      detailClass = "stat-detail-success";
+      textoDetalle = `▲ Subió: ${item.diferencia} persona${item.diferencia === 1 ? "" : "s"} más`;
+    } else if (item.tendencia === "bajo") {
+      detailClass = "stat-detail-danger";
+      textoDetalle = `▼ Bajó: ${item.diferencia} persona${item.diferencia === 1 ? "" : "s"} menos`;
+    }
+
+    return (
+      <div
+        key={item.nombre}
+        className={`stat-card attendance-stat-card ${item.variantClass}`}
+        onClick={() => setReunionSeleccionadaModal(item.nombre)}
+        style={{ cursor: "pointer" }}
+        title="Haz clic para ver el reporte detallado de ausentes y reingresos"
+      >
+        <div className="stat-info stat-info-full">
+          <h4>{item.nombre}</h4>
+          <h2 className="stat-number-main">{item.actual}</h2>
+          <p className={`stat-detail-text ${detailClass}`}>{textoDetalle}</p>
+        </div>
+      </div>
+    );
+  };
 
   const filtrarHistorialPorTiempo = (historial) => {
     const dataArray = Array.isArray(historial)
@@ -115,30 +155,10 @@ export default function AttendanceTrendSection({
         </div>
       </div>
 
-      {/* 🏷️ Fila superior: Tarjetas de Asistencia Específicas */}
-      {ministerioSeleccionado === "todos" && (
+      {/* 🏷️ Fila superior: Tarjetas de Última Asistencia sin íconos */}
+      {ministerioSeleccionado === "todos" && resumenAsistencias.length > 0 && (
         <div className="attendance-stats-grid">
-          {resumenAsistencias.map((item, index) => {
-            const coloresIcono = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b"];
-            const colorSeleccionado = coloresIcono[index % coloresIcono.length];
-
-            return (
-              <div
-                key={item.nombre}
-                onClick={() => setReunionSeleccionadaModal(item.nombre)} // 👈 3. Activamos el modal al hacer clic
-                style={{ cursor: "pointer" }}
-                title="Haz clic para ver el reporte detallado de ausentes y reingresos"
-              >
-                <StatCard
-                  type="info"
-                  iconName="tendencia"
-                  iconColor={colorSeleccionado}
-                  title={item.nombre}
-                  value={item.actual}
-                />
-              </div>
-            );
-          })}
+          {resumenAsistencias.map((item) => renderAttendanceStatCard(item))}
         </div>
       )}
 
@@ -306,7 +326,7 @@ export default function AttendanceTrendSection({
         )}
       </div>
 
-      {/* 👈 4. Renderizado condicional del Modal de Asistencia en Estadísticas */}
+      {/* Renderizado condicional del Modal de Asistencia en Estadísticas */}
       {reunionSeleccionadaModal && (
         <AsistenciaModal
           tipoReunion={reunionSeleccionadaModal}
