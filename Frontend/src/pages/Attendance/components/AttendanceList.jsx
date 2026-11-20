@@ -97,17 +97,35 @@ export default function AttendanceList({
     setModoEdicion(false);
   };
 
+  const normalizarTexto = (texto = "") =>
+    texto
+      .toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
+  const nombreMinisterio = normalizarTexto(
+    ministerio?.nombre || ministerio?.titulo || ministerio?.name || "",
+  );
+
+  const puedeAñadirAlumno =
+    nombreMinisterio.includes("escuelabiblica") ||
+    nombreMinisterio.includes("preadolescentes");
+
   return (
     <div className="attendance-list-card">
-      <div className="attendance-list-top-bar">
-        <button
-          type="button"
-          onClick={onOpenAddModal}
-          className="attendance-add-student-btn"
-        >
-          + Añadir Alumno a Clase
-        </button>
-      </div>
+      {puedeAñadirAlumno && (
+        <div className="attendance-list-top-bar">
+          <button
+            type="button"
+            onClick={onOpenAddModal}
+            className="attendance-add-student-btn"
+          >
+            + Añadir Alumno a Clase
+          </button>
+        </div>
+      )}
 
       {yaFueTomada && !modoEdicion && (
         <div className="attendance-warning-banner">
