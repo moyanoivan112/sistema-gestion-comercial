@@ -25,7 +25,7 @@
 /* Limpieza de márgenes internos del header para que fluyan bien juntos */
 .dashboard-header h2 {
   margin: 0 0 4px 0;
-  font-size: 1.5rem;
+  /* font-size: 1.5rem; */
   color: #1e293b;
 }
 
