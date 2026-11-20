@@ -57,8 +57,8 @@ export default function BirthdaysWidget({ members = [] }) {
     <article className="widget-card">
       <header className="widget-header">
         <h3 className="birthdays-title">
-          <Icon name="cumpleanos" size={24} color="rgb(255, 0, 85)" />{" "}
-          Cumpleaños ({nombreMesActual})
+          <Icon name="Cake" size={24} color="rgb(255, 0, 85)" /> Cumpleaños (
+          {nombreMesActual})
         </h3>
       </header>
 

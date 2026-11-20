@@ -64,8 +64,8 @@ export default function CumpleanosUltimaSemanaWidget({ members = [] }) {
     <article className="widget-card">
       <header className="widget-header">
         <h3 className="birthdays-title">
-          <Icon name="cumpleanos" size={22} color="rgb(255, 140, 0)" />{" "}
-          Cumpleaños a celebrar
+          <Icon name="Cake" size={22} color="rgb(255, 140, 0)" /> Cumpleaños a
+          celebrar
         </h3>
       </header>
 
