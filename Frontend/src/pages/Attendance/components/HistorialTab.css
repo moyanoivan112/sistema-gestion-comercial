@@ -1,0 +1,415 @@
+/* src/pages/Attendance/components/HistorialTab.css */
+
+.historial-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.historial-main-title {
+  margin: 0 0 5px 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.historial-main-subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.historial-state-text {
+  color: #64748b;
+  text-align: center;
+  padding: 30px;
+  margin: 0;
+}
+
+.historial-empty-text {
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  padding: 30px;
+  margin: 0;
+}
+
+.historial-table-container {
+  width: 100%;
+  overflow-x: auto;
+  max-height: 450px;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.historial-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.historial-table th {
+  background: #f8fafc;
+  text-align: left;
+  color: #475569;
+  padding: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.historial-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.historial-row-clickable {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.historial-row-clickable:hover {
+  background: #f8fafc;
+}
+
+.historial-col-date {
+  font-weight: 600;
+  color: #0284c7;
+}
+
+.historial-col-ministerio {
+  font-weight: 500;
+  color: #334155;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.historial-count-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.historial-detail-btn {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.historial-detail-btn:hover {
+  background: #0284c7;
+}
+
+/* Paginación */
+.historial-pagination-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.historial-pagination-info {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.historial-pagination-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.historial-page-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  color: #334155;
+  transition: background 0.2s;
+}
+
+.historial-page-btn:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+  color: #94a3b8;
+}
+
+.historial-page-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+/* ==========================================
+   ESTILOS DEL MODAL INTERNO (DetalleAsistenciaModal)
+   ========================================== */
+
+.historial-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.historial-modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+}
+
+.historial-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+.historial-modal-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+}
+
+.historial-modal-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.historial-modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+.historial-modal-close-btn:hover {
+  color: #1e293b;
+}
+
+.historial-col-name {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.historial-col-dni {
+  color: #64748b;
+}
+
+.historial-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.historial-badge.presente {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.historial-badge.ausente {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.historial-modal-footer {
+  margin-top: 20px;
+  text-align: right;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 15px;
+}
+
+.historial-action-btn {
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.historial-action-btn:hover {
+  background: #0369a1;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .historial-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .historial-main-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .historial-main-subtitle,
+html.dark-theme .historial-state-text,
+html.dark-theme .historial-empty-text,
+html.dark-theme .historial-pagination-info {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .historial-table th {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html.dark-theme .historial-table td {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .historial-row-clickable:hover {
+  background: #0f172a !important;
+}
+
+html.dark-theme .historial-col-date {
+  color: #38bdf8 !important;
+}
+
+html.dark-theme .historial-col-ministerio {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .historial-count-badge {
+  background: #0369a1 !important;
+  color: #e0f2fe !important;
+}
+
+html.dark-theme .historial-pagination-bar {
+  border-color: #334155 !important;
+}
+
+html.dark-theme .historial-page-btn {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme .historial-page-btn:disabled {
+  background: #111827 !important;
+  color: #64748b !important;
+}
+
+html.dark-theme .historial-page-btn:hover:not(:disabled) {
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* Modo oscuro para el Modal Interno */
+html.dark-theme .historial-modal-content {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .historial-modal-header {
+  border-color: #334155 !important;
+}
+
+html.dark-theme .historial-modal-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .historial-modal-subtitle {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .historial-modal-close-btn {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .historial-modal-close-btn:hover {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .historial-col-name {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .historial-col-dni {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .historial-badge.presente {
+  background: #064e3b !important;
+  color: #4ade80 !important;
+}
+
+html.dark-theme .historial-badge.ausente {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+html.dark-theme .historial-modal-footer {
+  border-color: #334155 !important;
+}
+
+/* Scrollbars personalizados en modo oscuro */
+html.dark-theme .historial-table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.dark-theme .historial-table-container::-webkit-scrollbar-track {
+  background: #0f172a !important;
+  border-radius: 4px;
+}
+
+html.dark-theme .historial-table-container::-webkit-scrollbar-thumb {
+  background: #64748b !important;
+  border-radius: 4px;
+}
+
+html.dark-theme .historial-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}

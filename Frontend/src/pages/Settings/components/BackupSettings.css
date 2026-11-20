@@ -1,0 +1,149 @@
+/* ==========================================
+   BackupSettings.css
+   ========================================== */
+
+.backup-settings-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.backup-header-section {
+  margin-bottom: 20px;
+}
+
+.backup-title {
+  margin: 0 0 5px 0;
+  color: #1e293b;
+  font-size: 1.15rem;
+}
+
+.backup-subtitle {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.backup-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.backup-action-box {
+  flex: 1;
+  min-width: 280px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.backup-action-box h4 {
+  margin: 0 0 8px 0;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.backup-action-box p {
+  margin: 0 0 20px 0;
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.btn-backup-export {
+  padding: 10px 16px;
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+  align-self: flex-start;
+}
+
+.btn-backup-export:hover:not(:disabled) {
+  background: #0369a1;
+}
+
+.btn-backup-export:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.backup-import-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.backup-file-input {
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.btn-backup-import {
+  padding: 10px 16px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+  align-self: flex-start;
+}
+
+.btn-backup-import:hover {
+  background: #b91c1c;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .backup-settings-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .backup-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .backup-subtitle,
+html.dark-theme .backup-action-box p {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .backup-action-box {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .backup-action-box h4 {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .backup-file-input {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .btn-backup-export {
+  background: #0284c7 !important;
+}
+
+html.dark-theme .btn-backup-import {
+  background: #991b1b !important;
+}

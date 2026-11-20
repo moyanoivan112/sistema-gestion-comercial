@@ -1,0 +1,404 @@
+/* ==========================================
+   MinisteriosSettings.css
+   ========================================== */
+
+.ministerios-settings-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.ministerios-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.ministerios-settings-title {
+  margin: 0 0 5px 0;
+  color: #1e293b;
+  font-size: 1.15rem;
+}
+
+.ministerios-subtitle {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.btn-open-modal {
+  padding: 10px 18px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-open-modal:hover {
+  background: #15803d;
+}
+
+/* Tabla */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ministerios-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.ministerios-table th {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  font-weight: 700;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.ministerios-table-row {
+  border-bottom: 1px solid #dee2e6;
+  transition: background 0.15s ease;
+}
+
+.ministerios-table-row:hover {
+  background: #f8f9fa;
+}
+
+.ministerio-col-name {
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.ministerios-table td {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Badges de Estado */
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Botones de la tabla */
+.ministerios-actions-group {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.btn-ministerio-edit {
+  padding: 5px 12px;
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-ministerio-edit:hover {
+  background: #0369a1;
+}
+
+.btn-ministerio-toggle {
+  padding: 5px 12px;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-ministerio-toggle.deactivate {
+  background: #dc3545;
+}
+
+.btn-ministerio-toggle.deactivate:hover {
+  background: #c82333;
+}
+
+.btn-ministerio-toggle.activate {
+  background: #16a34a;
+}
+
+.btn-ministerio-toggle.activate:hover {
+  background: #15803d;
+}
+
+/* ==========================================
+   ESTILOS DEL MODAL FLOTANTE
+   ========================================== */
+.ministerios-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.ministerios-modal-content {
+  background: #ffffff;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ministerios-modal-header {
+  background: #1e293b;
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ministerios-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.ministerios-modal-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.ministerios-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ministerios-modal-form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ministerios-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.ministerios-form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.ministerios-form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.ministerios-modal-input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  background-color: #f8fafc;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ministerios-modal-input:focus {
+  border-color: #0284c7;
+  background-color: #fff;
+}
+
+.ministerios-checkbox-group {
+  margin-top: 5px;
+}
+
+.ministerio-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+}
+
+.ministerios-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.ministerio-submit-btn {
+  padding: 10px 18px;
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.ministerio-submit-btn:hover {
+  background: #0369a1;
+}
+
+.ministerio-cancel-btn {
+  padding: 10px 18px;
+  background: #64748b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.ministerio-cancel-btn:hover {
+  background: #475569;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .ministerios-settings-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .ministerios-settings-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .ministerios-subtitle {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .ministerios-table th {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html.dark-theme .ministerios-table-row {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .ministerios-table-row:hover {
+  background: #0f172a !important;
+}
+
+html.dark-theme .ministerio-col-name,
+html.dark-theme .ministerios-table td {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .badge-success {
+  background: #064e3b !important;
+  color: #34d399 !important;
+}
+
+html.dark-theme .badge-danger {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+/* Modo oscuro para el modal */
+html.dark-theme .ministerios-modal-content {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .ministerios-modal-form {
+  background: #1e293b !important;
+}
+
+html.dark-theme .ministerios-form-group label,
+html.dark-theme .ministerio-checkbox-label {
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme .ministerios-modal-input {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .ministerios-modal-footer {
+  border-color: #334155 !important;
+}

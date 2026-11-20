@@ -1,0 +1,88 @@
+/* src/pages/Dashboard/components/AbsenceAlertWidget.css */
+
+.absence-status-msg {
+  padding: 10px;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.absence-status-msg.success {
+  color: #16a34a;
+  font-style: italic;
+}
+
+.absence-scroll-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.absence-alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #fee2e2;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #fee2e2; /* Borde base en modo claro */
+  box-sizing: border-box;
+}
+
+.absence-member-name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.absence-member-date {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.absence-badge-status {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+/* Correcciones para Modo Oscuro en Alerta de Ausencias */
+html.dark-theme .widget-card.alert-danger {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+html.dark-theme .absence-alert-item {
+  background-color: #0f172a !important; /* Fondo interno contrastante para cada persona */
+  border: 1px solid #334155 !important;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+html.dark-theme .absence-member-name {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .absence-member-date {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .absence-status-msg {
+  color: #94a3b8 !important;
+}
+html.dark-theme .absence-badge-status {
+  color: black !important;
+}
+
+html.dark-theme .absence-status-msg.success {
+  color: #4ade80 !important;
+}

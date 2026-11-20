@@ -1,0 +1,92 @@
+/* src/pages/Dashboard/components/StatCard.css */
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+  /* Mantenemos el borde izquierdo de 5px siempre firme y explícito */
+  border-left: 5px solid #ccc;
+  border-top: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  box-sizing: border-box;
+  transition:
+    transform 0.2s,
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Tipos de bordes laterales según la variante (manteniendo siempre los 5px) */
+.stat-card.primary {
+  border-left: 5px solid #3498db !important;
+}
+.stat-card.success {
+  border-left: 5px solid #2ecc71 !important;
+}
+.stat-card.info {
+  border-left: 5px solid #9b59b6 !important;
+}
+.stat-card.warning {
+  border-left: 5px solid #f1c40f !important;
+}
+
+.stat-icon {
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-info h3 {
+  margin: 0;
+  font-size: 12px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-number {
+  margin: 5px 0 0 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+html.dark-theme .stat-card {
+  background-color: #1e293b !important;
+  /* El borde izquierdo se mantiene de 5px gracias a las clases de arriba, 
+     aquí solo estipulamos los bordes sutiles para el resto del contenedor */
+  border-top: 1px solid #334155 !important;
+  border-right: 1px solid #334155 !important;
+  border-bottom: 1px solid #334155 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark-theme .stat-info h3 {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .stat-number {
+  color: #f8fafc !important;
+}
+
+/* Brillo sutil para los iconos en modo oscuro sin perder su color base */
+html.dark-theme .stat-icon svg {
+  filter: brightness(1.3);
+}

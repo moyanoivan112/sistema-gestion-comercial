@@ -1,0 +1,436 @@
+/* ==========================================
+   Estilos del Modal de Asistencia
+   ========================================== */
+
+.asistencia-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(2, 6, 23, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-sizing: border-box;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.asistencia-modal-container {
+  background: #ffffff;
+  width: 96vw;
+  max-width: 1200px;
+  height: 92vh;
+  height: 92dvh;
+  max-height: 92vh;
+  max-height: 92dvh;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+  animation: asistenciaModalFadeIn 0.16s ease-out;
+}
+
+@keyframes asistenciaModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* --- Encabezado y botón cerrar --- */
+.asistencia-modal-header {
+  padding: 14px 18px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.asistencia-modal-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.asistencia-modal-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.asistencia-modal-subtitle-fecha {
+  display: block;
+  color: #64748b;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.asistencia-modal-close-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e2e8f0;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.asistencia-modal-close-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* --- Pestañas de navegación --- */
+.asistencia-modal-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.asistencia-modal-tab-btn {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+  color: #475569;
+  transition: all 0.18s ease;
+}
+
+.asistencia-modal-tab-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.65);
+  color: #0f172a;
+}
+
+.asistencia-modal-tab-btn.active {
+  color: #0284c7;
+  background: #ffffff;
+  border-color: #bae6fd;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.12);
+}
+
+/* --- Contenedor de lista estirado hasta abajo --- */
+.asistencia-modal-list-container {
+  padding: 12px 14px 14px 14px;
+  overflow: hidden;
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.asistencia-modal-list-panel {
+  flex: 1 1 0%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.asistencia-modal-empty {
+  text-align: center;
+  color: #64748b;
+  padding: 64px 16px;
+  font-size: 0.95rem;
+  margin: auto;
+}
+
+.asistencia-modal-member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.asistencia-modal-member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.asistencia-modal-member-item:hover {
+  border-color: #cbd5e1;
+}
+
+.asistencia-modal-member-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.asistencia-modal-member-item strong {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.asistencia-modal-member-item small {
+  color: #64748b;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.asistencia-badge-status {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.asistencia-badge-status.ausente {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.asistencia-badge-status.reingreso {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.asistencia-modal-loading {
+  padding: 80px 16px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: auto;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .asistencia-modal-container {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .asistencia-modal-header {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .asistencia-modal-tabs {
+  background: #0b1220 !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .asistencia-modal-header h3 {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .asistencia-modal-subtitle-fecha {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .asistencia-modal-close-btn {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #475569 !important;
+}
+
+html.dark-theme .asistencia-modal-close-btn:hover {
+  background: #7f1d1d !important;
+  border-color: #ef4444 !important;
+  color: #fecaca !important;
+}
+
+html.dark-theme .asistencia-modal-tab-btn {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .asistencia-modal-tab-btn:hover:not(.active) {
+  background: rgba(30, 41, 59, 0.7) !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .asistencia-modal-tab-btn.active {
+  color: #38bdf8 !important;
+  background: #1e293b !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark-theme .asistencia-modal-list-panel {
+  background: rgba(15, 23, 42, 0.55) !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .asistencia-modal-member-item {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .asistencia-modal-member-item:hover {
+  border-color: #475569 !important;
+}
+
+html.dark-theme .asistencia-modal-member-item strong {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .asistencia-modal-member-item small {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .asistencia-badge-status.ausente {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+html.dark-theme .asistencia-badge-status.reingreso {
+  background: #064e3b !important;
+  color: #a7f3d0 !important;
+}
+
+/* ==========================================
+   AJUSTES ESPECÍFICOS PARA CELULARES
+   ========================================== */
+
+@media (max-width: 768px) {
+  .asistencia-modal-overlay {
+    padding: 8px;
+  }
+
+  .asistencia-modal-container {
+    width: 100%;
+    height: 94vh;
+    height: 94dvh;
+    max-height: 94vh;
+    max-height: 94dvh;
+    border-radius: 12px;
+  }
+
+  .asistencia-modal-header {
+    padding: 12px 14px;
+  }
+
+  .asistencia-modal-header h3 {
+    font-size: 1.05rem;
+  }
+
+  .asistencia-modal-subtitle-fecha {
+    font-size: 0.78rem;
+  }
+
+  .asistencia-modal-close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.25rem;
+  }
+
+  .asistencia-modal-tabs {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .asistencia-modal-tab-btn {
+    padding: 8px 8px;
+    font-size: 0.78rem;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .asistencia-modal-list-container {
+    padding: 10px 10px 12px 10px;
+    flex: 1 1 0%;
+    min-height: 0;
+  }
+
+  .asistencia-modal-list-panel {
+    padding: 10px;
+    flex: 1 1 0%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .asistencia-modal-member-list {
+    gap: 10px;
+  }
+
+  .asistencia-modal-member-item {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .asistencia-modal-member-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .asistencia-modal-member-item strong {
+    font-size: 0.9rem;
+  }
+
+  .asistencia-modal-member-item small {
+    font-size: 0.76rem;
+  }
+
+  .asistencia-badge-status {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+}

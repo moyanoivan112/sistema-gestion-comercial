@@ -1,0 +1,194 @@
+/* ==========================================
+   Login.css - Estilos y Modo Oscuro
+   ========================================== */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8fafc;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+/* Tarjeta Principal */
+.login-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.login-header {
+  background-color: #1e293b;
+  color: white;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.login-header h2 {
+  margin: 0 0 5px 0;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.login-subtitle {
+  text-align: center;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.login-form {
+  background: #ffffff;
+  padding: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  transition: background 0.2s;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.form-group input {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s;
+  background-color: #f8fafc;
+  color: #1e293b;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.form-group input:focus {
+  border-color: #0284c7;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+.btn-submit {
+  background-color: #1e293b;
+  color: white;
+  padding: 11px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 5px;
+  width: 100%;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #0f172a;
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-alert {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+  text-align: center;
+  border: 1px solid #fca5a5;
+  font-weight: 500;
+}
+
+.login-footer-links {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.login-footer-links a {
+  color: #0284c7;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .login-container {
+  background-color: #0f172a !important;
+}
+
+html.dark-theme .login-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .login-form {
+  background: #1e293b !important;
+}
+
+html.dark-theme .form-group label {
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme .form-group input {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .form-group input:focus {
+  border-color: #38bdf8 !important;
+  background-color: #1e293b !important;
+}
+
+html.dark-theme .btn-submit {
+  background-color: #0284c7 !important;
+}
+
+html.dark-theme .btn-submit:hover:not(:disabled) {
+  background-color: #0369a1 !important;
+}
+
+html.dark-theme .error-alert {
+  background-color: #7f1d1d !important;
+  color: #fca5a5 !important;
+  border-color: #991b1b !important;
+}
+
+html.dark-theme .login-footer-links a {
+  color: #38bdf8 !important;
+}

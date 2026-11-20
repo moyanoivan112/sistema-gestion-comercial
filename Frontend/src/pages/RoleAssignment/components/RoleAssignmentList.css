@@ -1,0 +1,225 @@
+/* ==========================================
+   RoleAssignmentList.css - Estilos Unificados
+   ========================================== */
+
+/* --- Contenedor General de la Tabla --- */
+.role-table-container {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+/* --- Estructura de la Tabla --- */
+.role-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.role-table thead tr,
+.role-table-header {
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.role-th,
+.role-table-header th {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.role-tr,
+.role-table-row {
+  border-bottom: 1px solid #dee2e6;
+  transition: background 0.15s ease;
+}
+
+.role-tr:hover,
+.role-table-row:hover {
+  background: #f8f9fa;
+}
+
+.role-td,
+.role-table-cell {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #212529;
+}
+
+/* --- Elementos internos de celdas --- */
+.role-username-code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #334155;
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.role-no-username {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* --- Utilidades de Alineación --- */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-weight-bold {
+  font-weight: 600;
+}
+
+/* --- Alertas y Estados --- */
+.role-email-missing {
+  color: #dc3545;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.role-no-access {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* --- Badges de Roles (Píldoras) --- */
+.role-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.role-badge-administrador {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.role-badge-pastor {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.role-badge-lider {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.role-badge-default {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* --- Botones de Acción --- */
+.role-action-btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  color: #ffffff;
+}
+
+.role-action-btn.edit {
+  background: #17a2b8;
+  color: #ffffff;
+}
+
+.role-action-btn.edit:hover {
+  background: #138496;
+}
+
+.role-action-btn.assign {
+  background: #28a745;
+  color: #ffffff;
+}
+
+.role-action-btn.assign:hover {
+  background: #218838;
+}
+
+/* --- Estado Vacío --- */
+.role-table-empty {
+  padding: 30px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .role-table-container {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .role-table thead tr,
+html.dark-theme .role-table-header {
+  background: #0f172a !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html.dark-theme .role-th,
+html.dark-theme .role-table-header th {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .role-tr,
+html.dark-theme .role-table-row {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .role-tr:hover,
+html.dark-theme .role-table-row:hover {
+  background: #0f172a !important;
+}
+
+html.dark-theme .role-td,
+html.dark-theme .role-table-cell {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .role-username-code {
+  background: #0f172a !important;
+  color: #38bdf8 !important;
+  border: 1px solid #334155;
+}
+
+html.dark-theme .role-badge-administrador {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+}
+
+html.dark-theme .role-badge-pastor {
+  background: #581c87 !important;
+  color: #d8b4fe !important;
+}
+
+html.dark-theme .role-badge-lider {
+  background: #064e3b !important;
+  color: #34d399 !important;
+}
+
+html.dark-theme .role-badge-default {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .role-table-empty {
+  color: #94a3b8 !important;
+}

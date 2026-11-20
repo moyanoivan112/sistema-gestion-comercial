@@ -1,0 +1,98 @@
+/* src/pages/Settings/Settings.css */
+
+/* ==========================================
+   AJUSTES MÓVIL PARA PESTAÑAS DE CONFIGURACIÓN
+   ========================================== */
+@media (max-width: 768px) {
+  .settings-tabs {
+    display: flex;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    gap: 6px;
+    padding: 4px;
+    max-width: 100%;
+  }
+
+  .settings-tab-btn {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Barra de Pestañas Moderna */
+.settings-tabs {
+  display: flex;
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 10px;
+  margin: 20px 0;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 4px;
+  border: 1px solid #cbd5e1;
+}
+
+.settings-tab-btn {
+  flex: 1;
+  padding: 10px 15px;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.settings-tab-btn.active {
+  background: #ffffff;
+  color: #0284c7;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.settings-tab-btn:hover:not(.active) {
+  color: #1e293b;
+}
+
+.settings-content {
+  width: 100%;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .settings-header h2 {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .settings-header p {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .settings-tabs {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .settings-tab-btn {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .settings-tab-btn.active {
+  background: #1e293b !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark-theme .settings-tab-btn:hover:not(.active) {
+  color: #f8fafc !important;
+}

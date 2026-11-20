@@ -1,0 +1,124 @@
+/* src/pages/Attendance/components/LideresGrid.css */
+
+.lideres-grid-wrapper {
+  width: 100%;
+}
+
+.lideres-grid-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.lideres-grid-subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  margin-bottom: 20px;
+}
+
+.lideres-state-text {
+  color: #64748b;
+  text-align: center;
+  padding: 30px;
+  font-style: italic;
+  margin: 0;
+}
+
+.lideres-empty-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.lideres-empty-text {
+  color: #dc2626;
+  margin: 0;
+  font-weight: 500;
+}
+
+.lideres-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+.lider-card-item {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  text-align: center;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s,
+    border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.lider-card-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  border-color: #0284c7;
+}
+
+.lider-card-name {
+  margin: 0 0 8px 0;
+  color: #1e293b;
+  font-size: 1.05rem;
+}
+
+.lider-card-action {
+  font-size: 0.85rem;
+  color: #16a34a;
+  font-weight: bold;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .lideres-grid-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .lideres-grid-subtitle {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .lideres-state-text {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .lideres-empty-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .lideres-empty-text {
+  color: #fca5a5 !important;
+}
+
+html.dark-theme .lider-card-item {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark-theme .lider-card-item:hover {
+  border-color: #38bdf8 !important;
+}
+
+html.dark-theme .lider-card-name {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .lider-card-action {
+  color: #4ade80 !important;
+}

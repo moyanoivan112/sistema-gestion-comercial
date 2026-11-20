@@ -1,0 +1,76 @@
+/* src/pages/Dashboard/components/QuickActions.css */
+
+.quick-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.btn-quick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* El SVG hereda automáticamente el color del texto del botón */
+.btn-quick svg {
+  fill: currentColor !important;
+}
+
+.btn-quick:hover {
+  background-color: #f8f9fa;
+  border-color: #bdc3c7;
+  transform: translateY(-2px);
+}
+
+.btn-quick.primary {
+  background-color: #3498db;
+  color: white;
+  border-color: #2980b9;
+}
+
+.btn-quick.primary:hover {
+  background-color: #2980b9;
+}
+
+.quick-action-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================
+   MODO OSCURO
+   ========================================== */
+html.dark-theme .btn-quick {
+  background-color: #1e293b !important;
+  color: #f8fafc !important; /* Texto blanco en modo oscuro -> Los iconos se vuelven blancos automáticamente */
+  border: 1px solid #334155 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+html.dark-theme .btn-quick:hover {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+}
+
+html.dark-theme .btn-quick.primary {
+  background-color: #0284c7 !important;
+  border-color: #0369a1 !important;
+  color: #ffffff !important;
+}
+
+html.dark-theme .btn-quick.primary:hover {
+  background-color: #0369a1 !important;
+}

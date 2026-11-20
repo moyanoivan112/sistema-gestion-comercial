@@ -1,0 +1,148 @@
+/* src/pages/Attendance/components/AttendanceCards.css */
+
+.attendance-cards-wrapper {
+  width: 100%;
+}
+
+.attendance-cards-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.attendance-cards-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1e293b;
+}
+
+.attendance-cards-subtitle {
+  margin: 4px 0 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.attendance-date-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  color: #334155;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.attendance-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.attendance-card-item {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s,
+    border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.attendance-card-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-card-image-container {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.attendance-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.attendance-card-content {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.attendance-card-name {
+  margin: 0 0 4px 0;
+  color: #1e293b;
+  font-size: 1.1rem;
+}
+
+.attendance-card-meta {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.attendance-card-action {
+  color: #0284c7;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .attendance-cards-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .attendance-cards-subtitle {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .attendance-date-badge {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme .attendance-card-item {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark-theme .attendance-card-item:hover {
+  border-color: #475569 !important;
+}
+
+html.dark-theme .attendance-card-name {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .attendance-card-meta {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .attendance-card-action {
+  color: #38bdf8 !important;
+}

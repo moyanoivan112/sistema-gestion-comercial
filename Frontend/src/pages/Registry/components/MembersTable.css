@@ -1,0 +1,305 @@
+/* src/pages/Registry/components/MembersTable.css */
+
+.members-empty-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  color: #64748b;
+  font-style: italic;
+  border: 1px solid #e2e8f0;
+}
+
+.members-table-wrapper {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.members-main-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table-header {
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  color: #000000;
+  font-weight: 700;
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.members-table-row {
+  border-bottom: 1px solid #dee2e6;
+  transition: background 0.15s ease;
+}
+
+.members-table-row:hover {
+  background: #f8f9fa;
+}
+
+.members-td {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #212529;
+}
+
+.text-muted {
+  color: #495057;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Enlace interactivo del nombre */
+.member-name-btn {
+  background: none;
+  border: none;
+  color: #0284c7;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-size: 0.9rem;
+  transition: text-decoration 0.2s;
+}
+
+.member-name-btn:hover {
+  text-decoration: underline;
+}
+
+/* Badges / Etiquetas */
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-neutral {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Botones de Acción de la Fila */
+.members-actions-group {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.btn-members-edit {
+  background: #17a2b8;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-members-edit:hover {
+  background: #138496;
+}
+
+.btn-members-delete {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-members-delete:hover {
+  background: #c82333;
+}
+
+/* Modal de Detalles */
+.member-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.member-detail-modal {
+  background: #fff;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  animation: fadeIn 0.2s ease;
+}
+
+.member-detail-header {
+  background: #1e293b;
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.member-detail-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.member-detail-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.member-detail-close:hover {
+  opacity: 0.7;
+}
+
+.member-detail-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.detail-item {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.member-detail-footer {
+  background: #f8fafc;
+  padding: 12px 20px;
+  text-align: right;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn-members-close-modal {
+  background: #64748b;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.btn-members-close-modal:hover {
+  background: #475569;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .members-empty-card,
+html.dark-theme .members-table-wrapper {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .table-header {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html.dark-theme .members-table-row {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .members-table-row:hover {
+  background: #0f172a !important;
+}
+
+html.dark-theme .members-td {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .text-muted {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .member-name-btn {
+  color: #38bdf8 !important;
+}
+
+html.dark-theme .badge-success {
+  background: #064e3b !important;
+  color: #34d399 !important;
+}
+
+html.dark-theme .badge-warning {
+  background: #451a03 !important;
+  color: #fbbf24 !important;
+}
+
+html.dark-theme .badge-neutral {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+/* Modo oscuro para el Modal de Detalles */
+html.dark-theme .member-detail-modal {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .member-detail-header {
+  background: #0f172a !important;
+}
+
+html.dark-theme .member-detail-body {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .detail-item {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .member-detail-footer {
+  background: #0f172a !important;
+  border-top: 1px solid #334155 !important;
+}

@@ -1,0 +1,108 @@
+/* src/pages/Registry/components/RegistryToolbar.css */
+
+.registry-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.toolbar-search-wrapper {
+  flex: 1;
+  min-width: 220px;
+}
+
+.toolbar-select-wrapper {
+  min-width: 170px;
+}
+
+.toolbar-select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  width: 100%;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+  color: #1e293b;
+  transition: border-color 0.2s;
+}
+
+.toolbar-select:focus {
+  outline: none;
+  border-color: #0284c7;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.button-container button {
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-agregar {
+  background-color: #0284c7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-agregar:hover {
+  background-color: #0369a1;
+}
+
+.btn-ver-inactivos {
+  background-color: hsl(210, 12%, 64%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-ver-inactivos:hover {
+  background-color: hsl(210, 12%, 54%);
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .registry-toolbar {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark-theme .toolbar-select {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .btn-agregar {
+  background-color: #0284c7 !important;
+}
+
+html.dark-theme .btn-agregar:hover {
+  background-color: #0369a1 !important;
+}

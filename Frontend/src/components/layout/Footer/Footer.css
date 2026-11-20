@@ -1,0 +1,44 @@
+/* src/components/layout/Footer.css */
+
+.footer-container {
+  background-color: #2c3e50; /* Mismo tono oscuro del Sidebar para mantener coherencia */
+  color: #ecf0f1;
+  padding: 1.5rem; /* Usar rem (medida relativa) es mejor práctica que px */
+  border-top: 2px solid #1a252f;
+  margin-top: auto; /* Empuja el footer siempre hacia abajo en tu MainLayout */
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #bdc3c7; /* Un gris claro para que no brille tanto a la vista */
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.footer-links a {
+  color: #3498db; /* Azul para indicar que es clickeable */
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease-in-out; /* Animación suave recomendada en UX */
+}
+
+.footer-links a:hover {
+  color: #ffffff; /* Se ilumina al pasar el mouse */
+}
+
+.footer-links span {
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}

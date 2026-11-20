@@ -1,0 +1,140 @@
+/* src/pages/Registry/Registry.css */
+
+.registry-module {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.registry-header h2 {
+  margin: 0 0 5px 0;
+  color: #1e293b;
+}
+
+.registry-header p {
+  color: #64748b;
+  margin: 0 0 20px 0;
+  font-size: 0.95rem;
+}
+
+/* Contenedor de Pestañas */
+.registry-tabs-container {
+  display: flex;
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 10px;
+  margin: 20px 0;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 4px;
+  border: 1px solid #cbd5e1;
+}
+
+.registry-tab-btn {
+  flex: 1;
+  padding: 10px 15px;
+  cursor: pointer;
+  background: transparent;
+  color: #64748b;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.registry-tab-btn.active {
+  background: #ffffff;
+  color: #0284c7;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.registry-tab-btn:hover:not(.active) {
+  color: #1e293b;
+}
+
+/* Toolbar y Botones */
+.registry-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: gap;
+  gap: 15px;
+  margin-bottom: 20px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn-agregar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.btn-inactive {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-inactive:hover {
+  background: #5a6268;
+}
+
+.search-container {
+  flex: 1;
+  min-width: 280px;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .registry-header h2 {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .registry-header p {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .registry-tabs-container {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .registry-tab-btn {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .registry-tab-btn.active {
+  background: #1e293b !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark-theme .registry-tab-btn:hover:not(.active) {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .registry-toolbar {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}

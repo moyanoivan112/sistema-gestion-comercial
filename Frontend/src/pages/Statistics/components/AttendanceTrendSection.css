@@ -1,0 +1,318 @@
+/* ==========================================
+   AJUSTES MÓVIL PARA GRÁFICOS SIN DESBORDE
+   ========================================== */
+.attendance-chart-section,
+.attendance-charts-grid,
+.attendance-card,
+.attendance-chart-wrapper {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.attendance-card,
+.attendance-chart-wrapper {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .attendance-filter-bar,
+  .attendance-chart-section {
+    padding: 12px !important;
+  }
+
+  .attendance-filter-group {
+    min-width: 100% !important;
+  }
+
+  .grid-multiple,
+  .grid-single {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .attendance-card {
+    padding: 10px !important;
+  }
+
+  .attendance-badges-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .height-compact {
+    height: 210px;
+  }
+
+  .height-large {
+    height: 270px;
+  }
+}
+
+/* ==========================================
+   AttendanceTrendSection.css
+   ========================================== */
+
+.attendance-trend-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* --- Barra de Filtros --- */
+.attendance-filter-bar {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.attendance-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.attendance-filter-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.attendance-select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.9rem;
+  outline: none;
+  background: #f8fafc;
+  color: #1e293b;
+  transition: border-color 0.2s;
+}
+
+.attendance-select:focus {
+  border-color: #0284c7;
+}
+
+/* --- Cuadrícula de Tarjetas Superiores --- */
+.attendance-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+/* --- Sección de Gráficos --- */
+.attendance-chart-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.attendance-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1e293b;
+  font-size: 1.2rem;
+  margin: 0 0 10px 0;
+}
+
+.attendance-empty-msg {
+  padding: 30px;
+  text-align: center;
+  color: #64748b;
+}
+
+.attendance-charts-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-multiple {
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+}
+
+.grid-single {
+  grid-template-columns: 1fr;
+}
+
+/* --- Tarjeta Individual de Gráfico --- */
+.attendance-card {
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.attendance-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attendance-card-title {
+  margin: 0;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.attendance-badges-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.attendance-badge-inscritos {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.attendance-badge-porcentaje {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.attendance-badge-diff {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.diff-positive {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.diff-negative {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* --- Contenedor del Gráfico Recharts --- */
+.attendance-chart-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.height-compact {
+  height: 200px;
+}
+
+.height-large {
+  height: 320px;
+}
+
+.attendance-no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .attendance-filter-bar,
+html.dark-theme .attendance-chart-section {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .attendance-filter-label {
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme .attendance-select {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .attendance-section-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .attendance-card {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .attendance-card-header {
+  border-color: #334155 !important;
+}
+
+html.dark-theme .attendance-card-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .attendance-badge-inscritos {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .attendance-badge-porcentaje {
+  background: #0369a1 !important;
+  color: #e0f2fe !important;
+}
+
+/* ==========================================
+   MODO OSCURO PARA LAS INSIGNIAS DE DIFERENCIA
+   ========================================== */
+
+html.dark-theme .diff-positive {
+  background: #064e3b !important; /* Verde oscuro profundo */
+  color: #a7f3d0 !important; /* Texto verde claro brillante */
+}
+
+html.dark-theme .diff-negative {
+  background: #7f1d1d !important; /* Rojo oscuro profundo / granate */
+  color: #fca5a5 !important; /* Texto rojo claro brillante */
+}
+
+/* ==========================================
+   Modo oscuro para el Tooltip de Recharts
+   ========================================== */
+
+html.dark-theme .attendance-tooltip,
+html.dark-theme .recharts-default-tooltip {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+  border-radius: 8px !important;
+}
+
+/* Color de los textos y etiquetas dentro del tooltip en modo oscuro */
+html.dark-theme .recharts-tooltip-label,
+html.dark-theme .recharts-tooltip-item {
+  color: #f8fafc !important;
+}

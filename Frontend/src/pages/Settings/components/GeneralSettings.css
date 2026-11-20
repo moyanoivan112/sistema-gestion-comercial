@@ -1,0 +1,102 @@
+/* src/pages/Settings/components/GeneralSettings.css */
+
+.general-settings-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.general-settings-title {
+  margin: 0 0 5px 0;
+  color: #1e293b;
+  font-size: 1.15rem;
+}
+
+.general-settings-form {
+  max-width: 450px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.general-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.general-form-label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.general-form-input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  background-color: #fff;
+  color: #1e293b;
+  transition: border-color 0.2s;
+}
+
+.general-form-input:focus {
+  outline: none;
+  border-color: #0284c7;
+}
+
+.general-submit-btn {
+  padding: 10px 20px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  width: fit-content;
+  transition: background 0.2s;
+}
+
+.general-submit-btn:hover {
+  background: #15803d;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .general-settings-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .general-settings-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .general-form-label {
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme .general-form-input {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .general-submit-btn {
+  background: #16a34a !important;
+}
+
+html.dark-theme .general-submit-btn:hover {
+  background: #15803d !important;
+}

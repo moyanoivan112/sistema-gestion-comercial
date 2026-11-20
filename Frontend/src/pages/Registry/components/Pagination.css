@@ -1,0 +1,62 @@
+/* src/pages/Registry/components/Pagination.css */
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.pagination-btn {
+  padding: 6px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid #0284c7;
+  background-color: transparent;
+  color: #0284c7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+.pagination-btn:disabled {
+  border-color: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.pagination-info {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .pagination-info {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .pagination-btn {
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+}
+
+html.dark-theme .pagination-btn:hover:not(:disabled) {
+  background-color: #38bdf8 !important;
+  color: #0f172a !important;
+}
+
+html.dark-theme .pagination-btn:disabled {
+  border-color: #334155 !important;
+  color: #64748b !important;
+}

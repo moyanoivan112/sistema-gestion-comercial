@@ -1,0 +1,81 @@
+/* src/pages/Registry/components/SearchBar.css */
+
+.search-bar-container {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1; /* Borde gris sutil */
+  border-radius: 6px;
+  padding: 0 12px;
+  width: 100%;
+  max-width: 350px; /* Evita que el buscador ocupe toda la pantalla */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s;
+  box-sizing: border-box;
+}
+
+/* Efecto muy profesional: Ilumina todo el contenedor cuando el usuario hace clic dentro */
+.search-bar-container:focus-within {
+  border-color: #0284c7; /* Azul corporativo */
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.search-icon {
+  font-size: 14px;
+  margin-right: 8px;
+  opacity: 0.6; /* Un poco transparente para que no compita con el texto */
+  display: flex;
+  align-items: center;
+}
+
+/* Permitir que el SVG herede el color del texto según el tema */
+.search-icon svg {
+  fill: currentColor;
+  width: 18px;
+  height: 18px;
+  color: #64748b;
+}
+
+.search-input {
+  border: none;
+  outline: none; /* Quitamos el borde azul nativo del input */
+  padding: 10px 0;
+  width: 100%;
+  font-size: 14px;
+  color: #1e293b;
+  background: transparent;
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .search-bar-container {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+html.dark-theme .search-bar-container:focus-within {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+}
+
+html.dark-theme .search-icon svg {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .search-input {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .search-input::placeholder {
+  color: #64748b !important;
+}

@@ -1,0 +1,165 @@
+/* src/pages/Registry/InactiveMembers.css */
+
+.inactive-module {
+  width: 100%;
+}
+
+.inactive-header-container {
+  margin-bottom: 20px;
+}
+
+.inactive-title {
+  color: #1e293b;
+  margin-bottom: 5px;
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.inactive-subtitle {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.inactive-state-text {
+  text-align: center;
+  padding: 30px;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+.inactive-empty-card {
+  background: #fff;
+  padding: 40px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  font-style: italic;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.inactive-empty-text {
+  margin: 0;
+}
+
+.inactive-table-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.inactive-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.inactive-table th {
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #000000;
+  font-weight: 700;
+}
+
+.inactive-table-row {
+  border-bottom: 1px solid #dee2e6;
+  transition: background 0.15s ease;
+}
+
+.inactive-table-row:hover {
+  background: #f8f9fa;
+}
+
+.inactive-col-name {
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #212529;
+  font-size: 0.9rem;
+}
+
+.inactive-col-info {
+  padding: 12px 16px;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.text-right {
+  text-align: right;
+  padding: 12px 16px;
+}
+
+.inactive-reactivate-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.inactive-reactivate-btn:hover {
+  background: #218838;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .inactive-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .inactive-subtitle,
+html.dark-theme .inactive-state-text {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .inactive-empty-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .inactive-table-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .inactive-table th {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html.dark-theme .inactive-table-row {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .inactive-table-row:hover {
+  background: #0f172a !important;
+}
+
+html.dark-theme .inactive-col-name {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .inactive-col-info {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .inactive-reactivate-btn {
+  background: #16a34a !important;
+}
+
+html.dark-theme .inactive-reactivate-btn:hover {
+  background: #15803d !important;
+}
