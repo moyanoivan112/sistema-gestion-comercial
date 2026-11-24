@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import StatCard from "../Dashboard/components/StatCard";
 import GeneralStatsCard from "./components/GeneralStatsCard";
-import HistoricalChart from "./components/HistoricalChart";
+import DemographicsSection from "./components/DemographicsSection";
 import AttendanceTrendSection from "./components/AttendanceTrendSection";
-import { exportarDatos } from "../../services/exportUtils"; // 👈 Importamos el servicio
+import { exportarDatos } from "../../services/exportUtils";
 import "./Statistics.css";
 
 export default function Statistics() {
@@ -53,6 +53,39 @@ export default function Statistics() {
     fetchStatisticsData();
   }, []);
 
+  const totalActivos = personas.length;
+  const totalBautizados = personas.filter((p) => {
+    const val = p.bautizado;
+    return (
+      val === true ||
+      val === 1 ||
+      String(val).toLowerCase() === "sí" ||
+      String(val).toLowerCase() === "si"
+    );
+  }).length;
+  const totalDiscipulado = personas.filter((p) => {
+    const val = p.en_discipulado;
+    return (
+      val === true ||
+      val === 1 ||
+      String(val).toLowerCase() === "sí" ||
+      String(val).toLowerCase() === "si"
+    );
+  }).length;
+  const totalConDiscipulador = personas.filter(
+    (p) => p.discipulador && String(p.discipulador).trim() !== "",
+  ).length;
+  const totalBajas = inactivas.length;
+
+  const porcentajeBautizo =
+    totalActivos > 0 ? Math.round((totalBautizados / totalActivos) * 100) : 0;
+  const porcentajeDiscipulado =
+    totalActivos > 0 ? Math.round((totalDiscipulado / totalActivos) * 100) : 0;
+  const porcentajeAcompanamiento =
+    totalDiscipulado > 0
+      ? Math.round((totalConDiscipulador / totalDiscipulado) * 100)
+      : 0;
+
   const handleEjecutarExportacion = async () => {
     let datosFiltrados = personas;
     let nombreScope = "General_Congregacion";
@@ -65,7 +98,6 @@ export default function Statistics() {
         nombreScope = minSelec.nombre;
 
         try {
-          // Consultamos directamente al backend usando la tabla intermedia personas_ministerios
           const token = localStorage.getItem("token");
           const res = await api.get(`/ministerios/${exportScope}/personas`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -86,24 +118,34 @@ export default function Statistics() {
       return;
     }
 
-    // Métricas calculadas exclusivamente para este grupo
     const conMentorFiltrado = datosFiltrados.filter(
       (p) => p.discipulador && String(p.discipulador).trim() !== "",
     ).length;
-    const totalDiscipuladoFiltrado = datosFiltrados.filter(
-      (p) => p.en_discipulado,
-    ).length;
+    const totalDiscipuladoFiltrado = datosFiltrados.filter((p) => {
+      const val = p.en_discipulado;
+      return (
+        val === true ||
+        val === 1 ||
+        String(val).toLowerCase() === "sí" ||
+        String(val).toLowerCase() === "si"
+      );
+    }).length;
+    const totalBautizadosFiltrado = datosFiltrados.filter((p) => {
+      const val = p.bautizado;
+      return (
+        val === true ||
+        val === 1 ||
+        String(val).toLowerCase() === "sí" ||
+        String(val).toLowerCase() === "si"
+      );
+    }).length;
 
     const metricasCalculadas = {
       totalActivos: datosFiltrados.length,
-      totalBautizados: datosFiltrados.filter((p) => p.bautizado).length,
+      totalBautizados: totalBautizadosFiltrado,
       porcentajeBautizo:
         datosFiltrados.length > 0
-          ? Math.round(
-              (datosFiltrados.filter((p) => p.bautizado).length /
-                datosFiltrados.length) *
-                100,
-            )
+          ? Math.round((totalBautizadosFiltrado / datosFiltrados.length) * 100)
           : 0,
       totalDiscipulado: totalDiscipuladoFiltrado,
       porcentajeDiscipulado:
@@ -134,23 +176,6 @@ export default function Statistics() {
       </div>
     );
   }
-
-  const totalActivos = personas.length;
-  const totalBautizados = personas.filter((p) => p.bautizado).length;
-  const totalDiscipulado = personas.filter((p) => p.en_discipulado).length;
-  const totalConDiscipulador = personas.filter(
-    (p) => p.discipulador && p.discipulador.trim() !== "",
-  ).length;
-  const totalBajas = inactivas.length;
-
-  const porcentajeBautizo =
-    totalActivos > 0 ? Math.round((totalBautizados / totalActivos) * 100) : 0;
-  const porcentajeDiscipulado =
-    totalActivos > 0 ? Math.round((totalDiscipulado / totalActivos) * 100) : 0;
-  const porcentajeAcompanamiento =
-    totalDiscipulado > 0
-      ? Math.round((totalConDiscipulador / totalDiscipulado) * 100)
-      : 0;
 
   return (
     <section className="statistics-module">
@@ -201,9 +226,7 @@ export default function Statistics() {
               <StatCard
                 type="primary"
                 iconName="miembros"
-                iconColor={
-                  modoOscuroActivo ? "#ffffff" : "#1f1f1f"
-                } /* 👈 Aquí cambia de negro a blanco directo */
+                iconColor={modoOscuroActivo ? "#ffffff" : "#1f1f1f"}
                 title="Total Registrados"
                 value={totalActivos}
               />
@@ -252,13 +275,12 @@ export default function Statistics() {
         )}
 
         {activeTab === "demografia" && (
-          <div className="statistics-demografia-card">
-            <HistoricalChart
-              totalActivos={totalActivos}
-              totalBajas={totalBajas}
-              totalMinisterios={ministerios.length}
-            />
-          </div>
+          <DemographicsSection
+            personas={personas}
+            totalActivos={totalActivos}
+            totalBajas={totalBajas}
+            totalMinisterios={ministerios.length}
+          />
         )}
 
         {activeTab === "reportes" && (

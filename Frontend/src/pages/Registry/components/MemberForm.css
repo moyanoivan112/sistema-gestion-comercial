@@ -38,8 +38,9 @@
 
 .modal-header h3 {
   margin: 0;
-  color: #1e293b;
+  color: #1e293b !important;
   font-size: 1.25rem;
+  opacity: 1 !important;
 }
 
 .btn-close {
@@ -265,6 +266,74 @@ legend {
   background: #0369a1;
 }
 
+/* Toggle de dos botones para Sexo / Género (Modo Claro por defecto) */
+.gender-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background-color: #f1f5f9;
+  box-sizing: border-box;
+}
+
+.gender-toggle-group.has-error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.gender-toggle-btn {
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.gender-toggle-btn:hover:not(.active) {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.gender-toggle-btn.active.masculino {
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.28);
+}
+
+.gender-toggle-btn.active.femenino {
+  background-color: #db2777;
+  color: #ffffff;
+  border-color: #db2777;
+  box-shadow: 0 1px 3px rgba(219, 39, 119, 0.28);
+}
+
+.gender-error-text {
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.modal-content.form-modal > header.modal-header {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.modal-content.form-modal > header.modal-header h3 {
+  background-color: transparent !important;
+  color: #1e293b !important;
+  font-size: 1.25rem !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 /* ==========================================
    SOPORTE PARA MODO OSCURO (.dark-theme)
    ========================================== */
@@ -301,6 +370,41 @@ html.dark-theme .form-group select {
   background-color: #0f172a !important;
   border-color: #334155 !important;
   color: #f8fafc !important;
+}
+
+html.dark-theme .gender-toggle-group {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark-theme .gender-toggle-group.has-error {
+  border-color: #f87171 !important;
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+
+html.dark-theme .gender-toggle-btn {
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme .gender-toggle-btn:hover:not(.active) {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .gender-toggle-btn.active.masculino {
+  background-color: #0284c7 !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+}
+
+html.dark-theme .gender-toggle-btn.active.femenino {
+  background-color: #db2777 !important;
+  border-color: #f472b6 !important;
+  color: #ffffff !important;
+}
+
+html.dark-theme .gender-error-text {
+  color: #f87171 !important;
 }
 
 html.dark-theme fieldset {
@@ -357,4 +461,13 @@ html.dark-theme .confirm-btn-cancel {
 
 html.dark-theme .confirm-btn-cancel:hover {
   background: #475569 !important;
+}
+
+html.dark-theme .modal-content.form-modal > header.modal-header {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .modal-content.form-modal > header.modal-header h3 {
+  color: #f8fafc !important;
 }

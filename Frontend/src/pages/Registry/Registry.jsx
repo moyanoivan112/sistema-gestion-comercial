@@ -12,6 +12,7 @@ export default function Registry() {
     currentRows,
     searchTerm,
     filterBy,
+    generoFilter,
     sortBy,
     isFormOpen,
     memberToEdit,
@@ -22,6 +23,7 @@ export default function Registry() {
     setCurrentPage,
     handleSearchChange,
     handleFilterChange,
+    handleGeneroChange,
     handleSortChange,
     handleOpenForm,
     handleCloseForm,
@@ -60,6 +62,8 @@ export default function Registry() {
             onSearchChange={handleSearchChange}
             filterBy={filterBy}
             onFilterChange={handleFilterChange}
+            generoFilter={generoFilter}
+            onGeneroChange={handleGeneroChange}
             sortBy={sortBy}
             onSortChange={handleSortChange}
             onAddClick={() => handleOpenForm()}

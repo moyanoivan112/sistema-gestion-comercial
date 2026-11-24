@@ -1,6 +1,5 @@
 // src/pages/Registry/components/MembersTable.jsx
 import { useState } from "react";
-import Icon from "../../../components/common/Icon";
 import "./MembersTable.css";
 
 export default function MembersTable({ data, onEdit, onDelete }) {
@@ -15,7 +14,7 @@ export default function MembersTable({ data, onEdit, onDelete }) {
     return `${dia}/${mes}/${anio}`;
   };
 
-  if (data.length === 0) {
+  if (!Array.isArray(data) || data.length === 0) {
     return (
       <div className="members-empty-card">
         No se encontraron hermanos en el registro.
@@ -139,6 +138,10 @@ export default function MembersTable({ data, onEdit, onDelete }) {
               <div className="detail-item">
                 <strong>Nombre Completo:</strong> {selectedMember.apellido}{" "}
                 {selectedMember.nombre}
+              </div>
+              <div className="detail-item">
+                <strong>Sexo / Género:</strong>{" "}
+                {selectedMember.genero || "No especificado"}
               </div>
               <div className="detail-item">
                 <strong>DNI:</strong> {selectedMember.dni || "No especificado"}

@@ -12,6 +12,7 @@ export function useRegistry() {
 
   // Estados para Filtro y Ordenamiento
   const [filterBy, setFilterBy] = useState("todos"); // "todos", "bautizados", "no_bautizados", "discipulado"
+  const [generoFilter, setGeneroFilter] = useState("todos"); // "todos", "Masculino", "Femenino"
   const [sortBy, setSortBy] = useState("az"); // "az", "za", "recientes"
 
   const fetchMembers = async () => {
@@ -83,12 +84,17 @@ export function useRegistry() {
     setCurrentPage(1);
   };
 
+  const handleGeneroChange = (e) => {
+    setGeneroFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
     setCurrentPage(1);
   };
 
-  // 1. Filtrado combinado robusto (Buscador por texto + Selector de categoría flexible)
+  // 1. Filtrado combinado robusto (Buscador por texto + Selector de categoría + Sexo/Género)
   const filteredMembers = members.filter((member) => {
     const fullName =
       `${member.nombre || ""} ${member.apellido || ""}`.toLowerCase();
@@ -122,7 +128,14 @@ export function useRegistry() {
         String(val).toLowerCase() === "si";
     }
 
-    return matchesSearch && matchesFilter;
+    let matchesGenero = true;
+    if (generoFilter === "Masculino" || generoFilter === "Femenino") {
+      matchesGenero =
+        String(member.genero || "").toLowerCase() ===
+        generoFilter.toLowerCase();
+    }
+
+    return matchesSearch && matchesFilter && matchesGenero;
   });
 
   // 2. Ordenamiento dinámico basado en apellido, fecha de registro / ID o edad (fecha de nacimiento)
@@ -184,6 +197,7 @@ export function useRegistry() {
     currentRows,
     searchTerm,
     filterBy,
+    generoFilter,
     sortBy,
     isFormOpen,
     memberToEdit,
@@ -194,6 +208,7 @@ export function useRegistry() {
     setCurrentPage,
     handleSearchChange,
     handleFilterChange,
+    handleGeneroChange,
     handleSortChange,
     handleOpenForm,
     handleCloseForm,

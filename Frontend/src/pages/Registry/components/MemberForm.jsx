@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../../services/api";
 import "./MemberForm.css";
 
@@ -10,6 +10,7 @@ export default function MemberForm({ initialData, onClose, onSave }) {
       dni: "",
       email: "",
       fecha_nacimiento: "",
+      genero: "",
       telefono: "",
       direccion: "",
       contacto_referencia: "",
@@ -26,9 +27,18 @@ export default function MemberForm({ initialData, onClose, onSave }) {
   // Estado para controlar la ventana de confirmación antes de guardar
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // Evita dobles envíos si se presiona Enter repetidamente
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Mensaje de validación para el campo obligatorio de género
+  const [generoError, setGeneroError] = useState(false);
+
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        genero: initialData.genero || "",
+      });
     }
   }, [initialData]);
 
@@ -65,6 +75,15 @@ export default function MemberForm({ initialData, onClose, onSave }) {
     });
   };
 
+  // Selección rápida mediante toggle de 2 botones
+  const handleSelectGenero = (valor) => {
+    setFormData((prev) => ({
+      ...prev,
+      genero: valor,
+    }));
+    setGeneroError(false);
+  };
+
   // Manejar selección de checkboxes de ministerios
   const handleMinisterioToggle = (idMinisterio) => {
     setMinisteriosSeleccionados((prev) => {
@@ -76,14 +95,28 @@ export default function MemberForm({ initialData, onClose, onSave }) {
     });
   };
 
-  // Intercepta el evento del formulario (click o Enter) para mostrar el cartel de confirmación
+  // Intercepta el evento del formulario (click o Enter) para validar y mostrar confirmación
   const handleIntentarGuardar = (e) => {
     e.preventDefault();
+
+    if (showConfirm || isSaving) return;
+
+    if (!formData.genero) {
+      setGeneroError(true);
+      alert(
+        "⚠️ Por favor, selecciona si es Masculino o Femenino antes de guardar.",
+      );
+      return;
+    }
+
     setShowConfirm(true);
   };
 
   // Función real que ejecuta la lógica de guardado tras confirmar en el modal
-  const handleConfirmarGuardado = async () => {
+  const handleConfirmarGuardado = useCallback(async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
     setShowConfirm(false);
 
     try {
@@ -104,8 +137,38 @@ export default function MemberForm({ initialData, onClose, onSave }) {
     } catch (error) {
       console.error("Error al guardar:", error);
       alert("Ocurrió un error al guardar los cambios.");
+    } finally {
+      setIsSaving(false);
     }
-  };
+  }, [
+    formData,
+    initialData,
+    ministeriosSeleccionados,
+    onClose,
+    onSave,
+    isSaving,
+  ]);
+
+  // Atajos de teclado cuando el modal de confirmación está abierto:
+  // Enter -> Confirma guardado | Escape -> Cierra confirmación
+  useEffect(() => {
+    if (!showConfirm) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        e.stopPropagation();
+        handleConfirmarGuardado();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowConfirm(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => window.removeEventListener("keydown", handleKeyDown, true);
+  }, [showConfirm, handleConfirmarGuardado]);
 
   return (
     <div className="modal-overlay">
@@ -141,6 +204,39 @@ export default function MemberForm({ initialData, onClose, onSave }) {
                   onChange={handleChange}
                   required
                 />
+              </div>
+
+              <div className="form-group">
+                <label>Sexo / Género *</label>
+                <div
+                  className={`gender-toggle-group ${generoError ? "has-error" : ""}`}
+                  role="group"
+                  aria-label="Seleccionar sexo"
+                >
+                  <button
+                    type="button"
+                    className={`gender-toggle-btn ${
+                      formData.genero === "Masculino" ? "active masculino" : ""
+                    }`}
+                    onClick={() => handleSelectGenero("Masculino")}
+                  >
+                    ♂ Masculino
+                  </button>
+                  <button
+                    type="button"
+                    className={`gender-toggle-btn ${
+                      formData.genero === "Femenino" ? "active femenino" : ""
+                    }`}
+                    onClick={() => handleSelectGenero("Femenino")}
+                  >
+                    ♀ Femenino
+                  </button>
+                </div>
+                {generoError && (
+                  <small className="gender-error-text">
+                    Selecciona una opción para continuar
+                  </small>
+                )}
               </div>
 
               <div className="form-group">
@@ -269,27 +365,28 @@ export default function MemberForm({ initialData, onClose, onSave }) {
             <button type="button" className="btn-secondary" onClick={onClose}>
               Cancelar
             </button>
-            <button type="submit" className="btn-primary">
-              Guardar Registro
+            <button type="submit" className="btn-primary" disabled={isSaving}>
+              {isSaving ? "Guardando..." : "Guardar Registro"}
             </button>
           </footer>
         </form>
       </div>
 
-      {/* Cartel de confirmación emergente (Previene envíos accidentales por Enter) */}
+      {/* Cartel de confirmación emergente: Enter confirma, Escape revisa */}
       {showConfirm && (
         <div className="confirm-modal-overlay">
           <div className="confirm-modal-content">
             <h3 className="confirm-modal-title">¿Confirmar guardado?</h3>
             <p className="confirm-modal-text">
               ¿Estás seguro de que deseas guardar este registro en la
-              congregación?
+              congregación? (Enter para confirmar · Esc para revisar)
             </p>
             <div className="confirm-modal-actions">
               <button
                 type="button"
                 onClick={() => setShowConfirm(false)}
                 className="confirm-btn-cancel"
+                disabled={isSaving}
               >
                 No, revisar
               </button>
@@ -297,8 +394,9 @@ export default function MemberForm({ initialData, onClose, onSave }) {
                 type="button"
                 onClick={handleConfirmarGuardado}
                 className="confirm-btn-save"
+                disabled={isSaving}
               >
-                Sí, guardar
+                {isSaving ? "Guardando..." : "Sí, guardar"}
               </button>
             </div>
           </div>

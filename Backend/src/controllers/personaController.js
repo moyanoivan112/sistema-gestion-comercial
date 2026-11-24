@@ -1,5 +1,11 @@
 const db = require("../config/db");
 
+// Función auxiliar para normalizar el campo genero
+const normalizarGenero = (valor) => {
+  if (valor === "Masculino" || valor === "Femenino") return valor;
+  return null;
+};
+
 // 1. Obtener todas las personas con su rol del sistema (si lo tienen)
 const getPersonas = async (req, res) => {
   try {
@@ -216,6 +222,7 @@ const createPersona = async (req, res) => {
       dni,
       email,
       fecha_nacimiento,
+      genero,
       direccion,
       telefono,
       contacto_referencia,
@@ -225,9 +232,12 @@ const createPersona = async (req, res) => {
       fecha_registro,
     } = req.body;
 
-    if (!nombre || !apellido || !fecha_nacimiento) {
+    const generoLimpio = normalizarGenero(genero);
+
+    if (!nombre || !apellido || !fecha_nacimiento || !generoLimpio) {
       return res.status(400).json({
-        mensaje: "Nombre, apellido y fecha de nacimiento son obligatorios.",
+        mensaje:
+          "Nombre, apellido, fecha de nacimiento y sexo/género son obligatorios.",
       });
     }
 
@@ -237,8 +247,8 @@ const createPersona = async (req, res) => {
 
     const query = `
       INSERT INTO Personas 
-      (nombre, apellido, dni, email, fecha_nacimiento, direccion, telefono, contacto_referencia, bautizado, en_discipulado, discipulador, fecha_registro) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (nombre, apellido, dni, email, fecha_nacimiento, genero, direccion, telefono, contacto_referencia, bautizado, en_discipulado, discipulador, fecha_registro) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const isBautizadoBool = bautizado ? 1 : 0;
@@ -249,6 +259,7 @@ const createPersona = async (req, res) => {
       dni || null,
       email ? email.trim() : null,
       fecha_nacimiento,
+      generoLimpio,
       direccion || null,
       telefono || null,
       contacto_referencia || null,
@@ -318,6 +329,7 @@ const updatePersona = async (req, res) => {
       dni,
       email,
       fecha_nacimiento,
+      genero,
       direccion,
       telefono,
       contacto_referencia,
@@ -326,6 +338,8 @@ const updatePersona = async (req, res) => {
       discipulador,
       fecha_registro,
     } = req.body;
+
+    const generoLimpio = normalizarGenero(genero);
 
     const fechaLimpiaNacimiento = fecha_nacimiento
       ? fecha_nacimiento.split("T")[0]
@@ -336,7 +350,7 @@ const updatePersona = async (req, res) => {
 
     const query = `
       UPDATE Personas 
-      SET nombre = ?, apellido = ?, dni = ?, email = ?, fecha_nacimiento = ?, direccion = ?, telefono = ?, contacto_referencia = ?, bautizado = ?, en_discipulado = ?, discipulador = ?, fecha_registro = ? 
+      SET nombre = ?, apellido = ?, dni = ?, email = ?, fecha_nacimiento = ?, genero = ?, direccion = ?, telefono = ?, contacto_referencia = ?, bautizado = ?, en_discipulado = ?, discipulador = ?, fecha_registro = ? 
       WHERE id = ?
     `;
 
@@ -346,6 +360,7 @@ const updatePersona = async (req, res) => {
       dni || null,
       email ? email.trim() : null,
       fechaLimpiaNacimiento,
+      generoLimpio,
       direccion || null,
       telefono || null,
       contacto_referencia || null,

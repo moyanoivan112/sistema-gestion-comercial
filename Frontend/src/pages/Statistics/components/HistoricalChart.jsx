@@ -11,34 +11,78 @@ import {
 } from "recharts";
 import "./HistoricalChart.css";
 
+const esAfirmativo = (valor) => {
+  if (valor === true || valor === 1) return true;
+  if (typeof valor === "string") {
+    const normalizado = valor.trim().toLowerCase();
+    return (
+      normalizado === "sí" ||
+      normalizado === "si" ||
+      normalizado === "true" ||
+      normalizado === "1"
+    );
+  }
+  return false;
+};
+
 export default function HistoricalChart({
   totalActivos = 0,
   totalBajas = 0,
   totalMinisterios = 0,
   personas = [],
   ministerios = [],
+  totalBautizados: bautizadosProp,
+  totalDiscipulado: discipuladoProp,
+  totalConDiscipulador: conDiscipuladorProp,
 }) {
+  const listaPersonas = Array.isArray(personas) ? personas : [];
+
   const totalHistorico = totalActivos + totalBajas;
   const tasaRetencion =
     totalHistorico > 0
       ? Math.round((totalActivos / totalHistorico) * 100)
       : 100;
-  const totalBautizados = personas.filter((p) => p.bautizado).length;
-  const totalDiscipulado = personas.filter((p) => p.en_discipulado).length;
-  const conDiscipulador = personas.filter(
-    (p) => p.discipulador && String(p.discipulador).trim() !== "",
-  ).length;
+
+  const totalBautizados =
+    typeof bautizadosProp === "number"
+      ? bautizadosProp
+      : listaPersonas.filter((p) => esAfirmativo(p.bautizado)).length;
+
+  const totalDiscipulado =
+    typeof discipuladoProp === "number"
+      ? discipuladoProp
+      : listaPersonas.filter((p) => esAfirmativo(p.en_discipulado)).length;
+
+  const conDiscipulador =
+    typeof conDiscipuladorProp === "number"
+      ? conDiscipuladorProp
+      : listaPersonas.filter(
+          (p) => p.discipulador && String(p.discipulador).trim() !== "",
+        ).length;
+
   const porcentajeCoberturaDiscipulado =
     totalDiscipulado > 0
       ? Math.round((conDiscipulador / totalDiscipulado) * 100)
       : 0;
 
   const dataDemografia = [
-    { name: "Activos", cantidad: totalActivos, color: "#0284c7" },
-    { name: "Bautizados", cantidad: totalBautizados, color: "#16a34a" },
-    { name: "Discipulado", cantidad: totalDiscipulado, color: "#ca8a04" },
-    { name: "Con discipulador", cantidad: conDiscipulador, color: "#0ea5e9" },
-    { name: "Bajas", cantidad: totalBajas, color: "#dc2626" },
+    { name: "Activos", cantidad: Number(totalActivos) || 0, color: "#0284c7" },
+    {
+      name: "Bautizados",
+      cantidad: Number(totalBautizados) || 0,
+      color: "#16a34a",
+    },
+    {
+      name: "Discipulado",
+      cantidad: Number(totalDiscipulado) || 0,
+      color: "#ca8a04",
+    },
+    {
+      name: "Con discipulador",
+      cantidad: Number(conDiscipulador) || 0,
+      color: "#0ea5e9",
+    },
+    { name: "Bajas", cantidad: Number(totalBajas) || 0, color: "#dc2626" },
   ];
 
   const dataMinisterios = Array.isArray(ministerios)

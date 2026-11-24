@@ -8,6 +8,8 @@ export default function RegistryToolbar({
   onSearchChange,
   filterBy,
   onFilterChange,
+  generoFilter = "todos",
+  onGeneroChange = () => {},
   sortBy,
   onSortChange,
   onAddClick,
@@ -25,6 +27,7 @@ export default function RegistryToolbar({
           className="form-select toolbar-select"
           value={filterBy}
           onChange={onFilterChange}
+          aria-label="Filtrar por estado espiritual"
         >
           <option value="todos">Todos los registros</option>
           <option value="bautizados">Bautizados (Sí)</option>
@@ -33,12 +36,27 @@ export default function RegistryToolbar({
         </select>
       </div>
 
-      {/* 3. Selector de Ordenamiento (A-Z, Z-A, Recientes) */}
+      {/* 3. Selector de Filtro por Sexo / Género */}
+      <div className="toolbar-select-wrapper">
+        <select
+          className="form-select toolbar-select"
+          value={generoFilter}
+          onChange={onGeneroChange}
+          aria-label="Filtrar por sexo o género"
+        >
+          <option value="todos">Sexo: Todos</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Femenino">Femenino</option>
+        </select>
+      </div>
+
+      {/* 4. Selector de Ordenamiento (A-Z, Z-A, Recientes, Edad) */}
       <div className="toolbar-select-wrapper">
         <select
           className="form-select toolbar-select"
           value={sortBy}
           onChange={onSortChange}
+          aria-label="Ordenar registros"
         >
           <option value="az">Ordenar: A - Z</option>
           <option value="za">Ordenar: Z - A</option>
@@ -48,7 +66,7 @@ export default function RegistryToolbar({
         </select>
       </div>
 
-      {/* 4. Botón de acción principal */}
+      {/* 5. Botón de acción principal */}
       <div className="button-container">
         <button
           type="button"
