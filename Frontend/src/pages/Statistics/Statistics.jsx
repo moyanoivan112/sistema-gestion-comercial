@@ -87,6 +87,13 @@ export default function Statistics() {
     }
 
     // Métricas calculadas exclusivamente para este grupo
+    const conMentorFiltrado = datosFiltrados.filter(
+      (p) => p.discipulador && String(p.discipulador).trim() !== "",
+    ).length;
+    const totalDiscipuladoFiltrado = datosFiltrados.filter(
+      (p) => p.en_discipulado,
+    ).length;
+
     const metricasCalculadas = {
       totalActivos: datosFiltrados.length,
       totalBautizados: datosFiltrados.filter((p) => p.bautizado).length,
@@ -98,16 +105,17 @@ export default function Statistics() {
                 100,
             )
           : 0,
-      totalDiscipulado: datosFiltrados.filter((p) => p.en_discipulado).length,
+      totalDiscipulado: totalDiscipuladoFiltrado,
       porcentajeDiscipulado:
         datosFiltrados.length > 0
-          ? Math.round(
-              (datosFiltrados.filter((p) => p.en_discipulado).length /
-                datosFiltrados.length) *
-                100,
-            )
+          ? Math.round((totalDiscipuladoFiltrado / datosFiltrados.length) * 100)
           : 0,
-      totalBajas: 0,
+      totalConDiscipulador: conMentorFiltrado,
+      porcentajeAcompanamiento:
+        totalDiscipuladoFiltrado > 0
+          ? Math.round((conMentorFiltrado / totalDiscipuladoFiltrado) * 100)
+          : 0,
+      totalBajas: exportScope === "todos" ? totalBajas : 0,
     };
 
     exportarDatos(

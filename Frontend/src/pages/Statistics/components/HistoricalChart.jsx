@@ -1,4 +1,3 @@
-// src/pages/Statistics/components/HistoricalChart.jsx
 import React from "react";
 import {
   BarChart,
@@ -13,54 +12,80 @@ import {
 import "./HistoricalChart.css";
 
 export default function HistoricalChart({
-  totalActivos,
-  totalBajas,
-  totalMinisterios,
+  totalActivos = 0,
+  totalBajas = 0,
+  totalMinisterios = 0,
+  personas = [],
+  ministerios = [],
 }) {
-  // Datos estructurados para el gráfico de barras
-  const dataBalance = [
+  const totalHistorico = totalActivos + totalBajas;
+  const tasaRetencion =
+    totalHistorico > 0
+      ? Math.round((totalActivos / totalHistorico) * 100)
+      : 100;
+  const totalBautizados = personas.filter((p) => p.bautizado).length;
+  const totalDiscipulado = personas.filter((p) => p.en_discipulado).length;
+  const conDiscipulador = personas.filter(
+    (p) => p.discipulador && String(p.discipulador).trim() !== "",
+  ).length;
+  const porcentajeCoberturaDiscipulado =
+    totalDiscipulado > 0
+      ? Math.round((conDiscipulador / totalDiscipulado) * 100)
+      : 0;
+
+  const dataDemografia = [
     { name: "Activos", cantidad: totalActivos, color: "#0284c7" },
-    { name: "Inactivos/Bajas", cantidad: totalBajas, color: "#dc2626" },
-    {
-      name: "Total Procesado",
-      cantidad: totalActivos + totalBajas,
-      color: "#1e293b",
-    },
-    { name: "Ministerios", cantidad: totalMinisterios, color: "#9333ea" },
+    { name: "Bautizados", cantidad: totalBautizados, color: "#16a34a" },
+    { name: "Discipulado", cantidad: totalDiscipulado, color: "#ca8a04" },
+    { name: "Con discipulador", cantidad: conDiscipulador, color: "#0ea5e9" },
+    { name: "Bajas", cantidad: totalBajas, color: "#dc2626" },
   ];
+
+  const dataMinisterios = Array.isArray(ministerios)
+    ? ministerios
+        .map((m) => ({
+          nombre: m.nombre || "Sin nombre",
+          cantidad: Number(
+            m.cantidad_personas ?? m.total_miembros ?? m.miembros_count ?? 0,
+          ),
+        }))
+        .filter((m) => m.cantidad > 0)
+    : [];
 
   return (
     <div className="stats-panel">
       <h3>📊 Balance Histórico y Demográfico</h3>
       <p className="stats-panel-sub">
-        Control acumulado de altas, bajas y estabilidad de la base de datos
+        Comparativa de población activa, estado espiritual, retención y bajas
       </p>
 
-      {/* Gráfico de Barras Moderno */}
       <div className="historical-chart-container">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={dataBalance}
-            margin={{ top: 10, right: 20, left: -20, bottom: 0 }}
+            data={dataDemografia}
+            margin={{ top: 12, right: 20, left: -15, bottom: 5 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke="#eaeaea"
+              stroke="#334155"
+              opacity={0.25}
             />
-            <XAxis dataKey="name" stroke="#7f8c8d" fontSize={11} />
-            <YAxis stroke="#7f8c8d" fontSize={11} allowDecimals={false} />
+            <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
+            <YAxis stroke="#94a3b8" fontSize={11} allowDecimals={false} />
             <Tooltip
               contentStyle={{
-                background: "#fff",
+                background: "#0f172a",
+                color: "#f8fafc",
                 borderRadius: "8px",
-                border: "1px solid #cbd5e1",
+                border: "1px solid #334155",
                 fontSize: "0.85rem",
               }}
+              itemStyle={{ color: "#f8fafc" }}
             />
-            <Bar dataKey="cantidad" name="Registros" radius={[6, 6, 0, 0]}>
-              {dataBalance.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+            <Bar dataKey="cantidad" name="Personas" radius={[6, 6, 0, 0]}>
+              {dataDemografia.map((entry, index) => (
+                <Cell key={`cell-demo-${index}`} fill={entry.color} />
               ))}
             </Bar>
           </BarChart>
@@ -71,25 +96,32 @@ export default function HistoricalChart({
         <table className="stats-data-table">
           <tbody>
             <tr>
-              <td>Total Histórico de Miembros Activos</td>
+              <td>Tasa de Retención Histórica</td>
+              <td className="text-right font-bold text-active">
+                {tasaRetencion}% ({totalActivos}/{totalHistorico || 0})
+              </td>
+            </tr>
+            <tr>
+              <td>Miembros Activos Registrados</td>
               <td className="text-right font-bold text-active">
                 {totalActivos}
               </td>
             </tr>
             <tr>
-              <td>Historial de Miembros Inactivos (Bajas)</td>
+              <td>Historial de Bajas / Inactivos</td>
               <td className="text-right font-bold text-inactive">
                 {totalBajas}
               </td>
             </tr>
             <tr>
-              <td>Total Histórico Procesado (Activos + Bajas)</td>
+              <td>Bautizados / En Discipulado / Con discipulador</td>
               <td className="text-right font-bold text-total">
-                {totalActivos + totalBajas}
+                {totalBautizados} / {totalDiscipulado} / {conDiscipulador} (
+                {porcentajeCoberturaDiscipulado}% de discipulado)
               </td>
             </tr>
             <tr>
-              <td>Ministerios / Clases Activas configuradas</td>
+              <td>Ministerios / Grupos Configurados</td>
               <td className="text-right font-bold text-ministries">
                 {totalMinisterios}
               </td>
@@ -98,12 +130,35 @@ export default function HistoricalChart({
         </table>
       </div>
 
+      {dataMinisterios.length > 0 && (
+        <div
+          className="stats-data-table-container"
+          style={{ marginTop: "16px" }}
+        >
+          <h4 style={{ marginBottom: "8px", fontSize: "0.95rem" }}>
+            Distribución por Ministerio
+          </h4>
+          <table className="stats-data-table">
+            <tbody>
+              {dataMinisterios.map((item, idx) => (
+                <tr key={idx}>
+                  <td>{item.nombre}</td>
+                  <td className="text-right font-bold text-active">
+                    {item.cantidad}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <div className="stats-insight-box">
-        <strong>💡 Nota pastoral:</strong>
+        <strong>💡 Lectura pastoral:</strong>
         <p>
-          Los datos acumulados muestran la evolución general de la congregación
-          a lo largo del tiempo. Utilice estos reportes para evaluar cierres de
-          trimestre y planificación anual.
+          Contrastar activos, bautizados, discipulados y personas con
+          discipulador asignado te permite detectar brechas de seguimiento antes
+          de cierres trimestrales o campañas de bautismo.
         </p>
       </div>
     </div>
