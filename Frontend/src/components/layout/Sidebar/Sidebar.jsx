@@ -4,6 +4,7 @@ import UserConfigModal from "./components/UserConfigModal";
 import ThemeToggle from "./components/ThemeToggle";
 import Icon from "../../common/Icon";
 import "./Sidebar.css";
+import logoAncho from "../../../assets/logos/logo-ancho-claro.png";
 
 export default function Sidebar({ isOpen = false, onClose = () => {} }) {
   const navigate = useNavigate();
@@ -106,7 +107,12 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
         {/* Título de la App, Nombre Dinámico de la Iglesia y Botón Cerrar en Móvil */}
         <div className="sidebar-header-section">
           <div className="sidebar-header-top">
-            <h3 className="sidebar-app-title">Gestión Congregacional</h3>
+            <img
+              src={logoAncho}
+              alt="Logo Gestión Congregacional"
+              className="sidebar-logo-ancho"
+            />
+            {/* <h3 className="sidebar-app-title">Gestión Congregacional</h3> */}
             <button
               type="button"
               className="sidebar-close-btn"
