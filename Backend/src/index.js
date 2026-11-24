@@ -14,7 +14,9 @@ const backupRoutes = require("./routes/backupRoutes");
 require("./services/cronBackup");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+
+const isDevScript = process.env.npm_lifecycle_event === "dev";
+const PORT = Number(process.env.PORT) || (isDevScript ? 5000 : 80);
 
 // Middlewares
 app.use(cors());
@@ -41,5 +43,7 @@ if (fs.existsSync(frontendDistPath)) {
 }
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor corriendo exitosamente en el puerto ${PORT}`);
+  console.log(
+    `Servidor corriendo exitosamente en el puerto ${PORT} (${isDevScript ? "DEV" : "BUILD/PROD"})`,
+  );
 });
