@@ -1,131 +1,246 @@
-import { useState, useEffect } from "react";
-import api from "../../../services/api";
-import "./DetalleAsistenciaModal.css";
+/* src/pages/Attendance/components/DetalleAsistenciaModal.css */
 
-export default function DetalleAsistenciaModal({
-  fecha,
-  idMinisterio,
-  nombreMinisterio,
-  onClose,
-}) {
-  const [detalle, setDetalle] = useState([]);
-  const [loading, setLoading] = useState(true);
+.detalle-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
 
-  const formatearFecha = (fechaStr) => {
-    if (!fechaStr) return "-";
-    const soloFecha = String(fechaStr).split("T")[0];
-    const [anio, mes, dia] = soloFecha.split("-");
-    if (!anio || !mes || !dia) return soloFecha;
-    return `${dia}/${mes}/${anio}`;
-  };
+.detalle-modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+}
 
-  useEffect(() => {
-    let active = true;
+.detalle-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
 
-    const fetchDetalle = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get("/asistencia/historial", {
-          params: { fecha, id_ministerio: idMinisterio },
-        });
-        if (active) {
-          setDetalle(Array.isArray(response.data) ? response.data : []);
-        }
-      } catch (error) {
-        console.error("Error al cargar detalle de asistencia:", error);
-        if (active) {
-          setDetalle([]);
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    };
+.detalle-modal-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+}
 
-    fetchDetalle();
-    return () => {
-      active = false;
-    };
-  }, [fecha, idMinisterio]);
+.detalle-modal-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
 
-  return (
-    <div className="detalle-modal-overlay" onClick={onClose}>
-      <div
-        className="detalle-modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <header className="detalle-modal-header">
-          <div>
-            <h3 className="detalle-modal-title">Detalle de Asistencia</h3>
-            <p className="detalle-modal-subtitle">
-              {nombreMinisterio} — Fecha:{" "}
-              <strong>{formatearFecha(fecha)}</strong>
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="detalle-modal-close-btn"
-          >
-            ✕
-          </button>
-        </header>
+.detalle-modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s;
+}
 
-        {loading ? (
-          <p className="detalle-modal-state-text">Cargando listado...</p>
-        ) : detalle.length === 0 ? (
-          <p className="detalle-modal-state-text">
-            No hay registros para esta fecha.
-          </p>
-        ) : (
-          <div className="detalle-table-container">
-            <table className="detalle-asistencia-table">
-              <thead>
-                <tr>
-                  <th>Hermano/a</th>
-                  <th>DNI</th>
-                  <th className="text-center">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {detalle.map((item) => {
-                  const presente = item.presente === 1 || item.presente === true;
-                  return (
-                    <tr key={item.id}>
-                      <td className="detalle-col-name">
-                        {item.apellido}, {item.nombre}
-                      </td>
-                      <td className="detalle-col-dni">
-                        {item.dni || "S/D"}
-                      </td>
-                      <td className="text-center">
-                        <span
-                          className={`detalle-badge ${
-                            presente ? "presente" : "ausente"
-                          }`}
-                        >
-                          {presente ? "Presente ✓" : "Ausente ✗"}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+.detalle-modal-close-btn:hover {
+  color: #1e293b;
+}
 
-        <footer className="detalle-modal-footer">
-          <button
-            type="button"
-            onClick={onClose}
-            className="detalle-modal-action-btn"
-          >
-            Cerrar
-          </button>
-        </footer>
-      </div>
-    </div>
-  );
+.detalle-modal-state-text {
+  text-align: center;
+  color: #64748b;
+  padding: 20px;
+  font-style: italic;
+  margin: 0;
+}
+
+.detalle-table-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 350px;
+  border-radius: 6px;
+}
+
+.detalle-asistencia-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.detalle-asistencia-table th {
+  background: #f8fafc;
+  text-align: left;
+  color: #475569;
+  padding: 10px;
+  border-bottom: 2px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.detalle-asistencia-table td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.detalle-col-name {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.detalle-col-dni {
+  color: #64748b;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.detalle-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.detalle-badge.presente {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.detalle-badge.ausente {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.detalle-modal-footer {
+  margin-top: 20px;
+  text-align: right;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 15px;
+}
+
+.detalle-modal-action-btn {
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.detalle-modal-action-btn:hover {
+  background: #0369a1;
+}
+
+/* ==========================================
+   SOPORTE PARA MODO OSCURO (.dark-theme)
+   ========================================== */
+
+html.dark-theme .detalle-modal-content {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .detalle-modal-header {
+  border-color: #334155 !important;
+}
+
+html.dark-theme .detalle-modal-title {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .detalle-modal-subtitle {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .detalle-modal-close-btn {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .detalle-modal-close-btn:hover {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .detalle-modal-state-text {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .detalle-asistencia-table th {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+html.dark-theme .detalle-asistencia-table td {
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-theme .detalle-col-name {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .detalle-col-dni {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .detalle-badge.presente {
+  background: #064e3b !important;
+  color: #4ade80 !important;
+}
+
+html.dark-theme .detalle-badge.ausente {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+html.dark-theme .detalle-modal-footer {
+  border-color: #334155 !important;
+}
+
+html.dark-theme .detalle-modal-action-btn {
+  background: #0284c7 !important;
+}
+
+html.dark-theme .detalle-modal-action-btn:hover {
+  background: #0369a1 !important;
+}
+
+/* Scrollbars de la tabla en modo oscuro */
+html.dark-theme .detalle-table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.dark-theme .detalle-table-container::-webkit-scrollbar-track {
+  background: #0f172a !important;
+  border-radius: 4px;
+}
+
+html.dark-theme .detalle-table-container::-webkit-scrollbar-thumb {
+  background: #64748b !important;
+  border-radius: 4px;
+}
+
+html.dark-theme .detalle-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
 }
