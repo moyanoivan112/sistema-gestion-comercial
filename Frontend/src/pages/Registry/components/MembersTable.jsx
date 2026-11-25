@@ -1,11 +1,15 @@
-// src/pages/Registry/components/MembersTable.jsx
 import { useState } from "react";
 import "./MembersTable.css";
 
-export default function MembersTable({ data, onEdit, onDelete }) {
-  const [selectedMember, setSelectedMember] = useState(null); // Estado para el modal de detalles
+export default function MembersTable({
+  data,
+  onEdit,
+  onDelete,
+  canEdit = true,
+  canDelete = true,
+}) {
+  const [selectedMember, setSelectedMember] = useState(null);
 
-  // Función auxiliar para formatear la fecha a formato local argentino (DD/MM/AAAA)
   const formatearFecha = (fechaStr) => {
     if (!fechaStr) return "-";
     const soloFecha = fechaStr.split("T")[0];
@@ -22,6 +26,8 @@ export default function MembersTable({ data, onEdit, onDelete }) {
     );
   }
 
+  const mostrarColumnaAcciones = canEdit || canDelete;
+
   return (
     <div className="members-table-wrapper">
       <div className="table-responsive">
@@ -34,7 +40,9 @@ export default function MembersTable({ data, onEdit, onDelete }) {
               <th className="table-header">Bautizado</th>
               <th className="table-header">Discipulado</th>
               <th className="table-header">Discipulador</th>
-              <th className="table-header text-right">Acciones</th>
+              {mostrarColumnaAcciones && (
+                <th className="table-header text-right">Acciones</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -44,7 +52,6 @@ export default function MembersTable({ data, onEdit, onDelete }) {
 
               return (
                 <tr key={member.id} className="members-table-row">
-                  {/* Nombre Completo como Enlace Interactivo */}
                   <td className="members-td">
                     <button
                       type="button"
@@ -62,7 +69,6 @@ export default function MembersTable({ data, onEdit, onDelete }) {
                     {formatearFecha(member.fecha_nacimiento)}
                   </td>
 
-                  {/* Bautizado Badge */}
                   <td className="members-td">
                     <span
                       className={`badge ${
@@ -73,7 +79,6 @@ export default function MembersTable({ data, onEdit, onDelete }) {
                     </span>
                   </td>
 
-                  {/* Discipulado Badge */}
                   <td className="members-td">
                     <span
                       className={`badge ${
@@ -88,28 +93,33 @@ export default function MembersTable({ data, onEdit, onDelete }) {
                     {isDiscipulado ? member.discipulador || "Asignado" : "--"}
                   </td>
 
-                  {/* Botones de Acción */}
-                  <td className="members-td text-right">
-                    <div className="members-actions-group">
-                      <button
-                        type="button"
-                        onClick={() => onEdit(member)}
-                        title="Editar datos"
-                        className="btn-members-edit"
-                      >
-                        Editar
-                      </button>
+                  {mostrarColumnaAcciones && (
+                    <td className="members-td text-right">
+                      <div className="members-actions-group">
+                        {canEdit && onEdit && (
+                          <button
+                            type="button"
+                            onClick={() => onEdit(member)}
+                            title="Editar datos"
+                            className="btn-members-edit"
+                          >
+                            Editar
+                          </button>
+                        )}
 
-                      <button
-                        type="button"
-                        onClick={() => onDelete(member.id)}
-                        title="Dar de baja"
-                        className="btn-members-delete"
-                      >
-                        Baja
-                      </button>
-                    </div>
-                  </td>
+                        {canDelete && onDelete && (
+                          <button
+                            type="button"
+                            onClick={() => onDelete(member.id)}
+                            title="Dar de baja"
+                            className="btn-members-delete"
+                          >
+                            Baja
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })}
@@ -121,7 +131,6 @@ export default function MembersTable({ data, onEdit, onDelete }) {
       {selectedMember && (
         <div className="member-detail-overlay">
           <div className="member-detail-modal">
-            {/* Cabecera del Modal */}
             <div className="member-detail-header">
               <h3 className="member-detail-title">Detalle del Hermano</h3>
               <button
@@ -133,7 +142,6 @@ export default function MembersTable({ data, onEdit, onDelete }) {
               </button>
             </div>
 
-            {/* Cuerpo del Modal con Información Completa */}
             <div className="member-detail-body">
               <div className="detail-item">
                 <strong>Nombre Completo:</strong> {selectedMember.apellido}{" "}
@@ -174,7 +182,6 @@ export default function MembersTable({ data, onEdit, onDelete }) {
               )}
             </div>
 
-            {/* Pie del Modal */}
             <div className="member-detail-footer">
               <button
                 type="button"

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const verificarToken = require("../middlewares/authMiddleware");
+const { hashearPassword } = require("../utils/passwordHelper");
 
 router.post("/registrar", verificarToken, async (req, res) => {
   const idOrganizacion = req.idOrganizacion ?? req.user?.id_organizacion ?? 1;
@@ -55,13 +56,14 @@ router.post("/registrar", verificarToken, async (req, res) => {
     const idPersona = resultPersona.insertId;
 
     if (darAcceso) {
+      const passwordHasheada = await hashearPassword(password);
       await connection.query(
         "INSERT INTO usuarios (id_persona, id_organizacion, nombre_usuario, password, rol) VALUES (?, ?, ?, ?, ?)",
         [
           idPersona,
           idOrganizacion,
           nombre_usuario.trim(),
-          password.trim(),
+          passwordHasheada,
           rol,
         ],
       );

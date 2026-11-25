@@ -1,6 +1,5 @@
-// src/pages/Login/components/RecuperarPassword.jsx
 import { useState } from "react";
-import api from "../../../services/api"; // Instancia centralizada de axios
+import api from "../../../services/api";
 import "./RecuperarPassword.css";
 
 export default function RecuperarPassword({ onBack }) {
@@ -15,20 +14,35 @@ export default function RecuperarPassword({ onBack }) {
     e.preventDefault();
     setError("");
     setMensaje("");
+
+    const dniLimpio = dni.trim();
+    const emailLimpio = email.trim();
+    const claveLimpia = nuevaPassword.trim();
+
+    if (!dniLimpio || !emailLimpio || !claveLimpia) {
+      setError("Completá el DNI, correo electrónico y nueva contraseña.");
+      return;
+    }
+
+    if (claveLimpia.length < 6) {
+      setError("La nueva contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await api.post("/auth/recuperar", {
-        dni: dni.trim(),
-        email: email.trim(),
-        nueva_password: nuevaPassword.trim(),
+        dni: dniLimpio,
+        email: emailLimpio,
+        nueva_password: claveLimpia,
       });
 
       const data = response.data;
 
       setMensaje(data.mensaje);
       setTimeout(() => {
-        onBack(); // Regresa al login tras 2 segundos
+        onBack();
       }, 2000);
     } catch (err) {
       const errorMsg =
@@ -44,7 +58,6 @@ export default function RecuperarPassword({ onBack }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        {/* Cabecera institucional idéntica al Login */}
         <div className="login-header">
           <h2>Sistema Congregacional</h2>
           <strong>
@@ -84,7 +97,7 @@ export default function RecuperarPassword({ onBack }) {
               type="password"
               value={nuevaPassword}
               onChange={(e) => setNuevaPassword(e.target.value)}
-              placeholder="Ingrese la nueva contraseña"
+              placeholder="Mínimo 6 caracteres"
               required
             />
           </div>

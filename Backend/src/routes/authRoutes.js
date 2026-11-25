@@ -4,9 +4,13 @@ const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 const verificarToken = require("../middlewares/authMiddleware");
 const autorizarRoles = require("../middlewares/roleMiddleware");
+const {
+  hashearPassword,
+  verificarPassword,
+} = require("../utils/passwordHelper");
 
 // ==========================================
-// RUTA DE LOGIN (con organización y marca blanca)
+// RUTA DE LOGIN (con organización y migración suave a bcrypt)
 // ==========================================
 router.post("/login", async (req, res) => {
   const { nombre_usuario, password } = req.body;
@@ -41,11 +45,20 @@ router.post("/login", async (req, res) => {
     }
 
     const usuario = results[0];
+    const checkPass = await verificarPassword(password, usuario.password);
 
-    if (usuario.password !== password.trim()) {
+    if (!checkPass.valida) {
       return res
         .status(401)
         .json({ error: "Usuario o contraseña incorrectos" });
+    }
+
+    if (checkPass.necesitaMigrar) {
+      const nuevoHash = await hashearPassword(password);
+      await db.query("UPDATE usuarios SET password = ? WHERE id = ?", [
+        nuevoHash,
+        usuario.id,
+      ]);
     }
 
     if (usuario.organizacion_activa === 0) {
@@ -123,8 +136,12 @@ router.put("/update/:id", verificarToken, async (req, res) => {
     }
 
     const usuario = users[0];
+    const checkPass = await verificarPassword(
+      password_actual,
+      usuario.password,
+    );
 
-    if (usuario.password !== password_actual) {
+    if (!checkPass.valida) {
       return res
         .status(401)
         .json({ error: "La contraseña actual es incorrecta" });
@@ -134,8 +151,13 @@ router.put("/update/:id", verificarToken, async (req, res) => {
     const queryParams = [nombre_usuario.trim()];
 
     if (password_nueva && password_nueva.trim() !== "") {
+      const hashNueva = await hashearPassword(password_nueva);
       updateQuery += ", password = ?";
-      queryParams.push(password_nueva.trim());
+      queryParams.push(hashNueva);
+    } else if (checkPass.necesitaMigrar) {
+      const hashActual = await hashearPassword(password_actual);
+      updateQuery += ", password = ?";
+      queryParams.push(hashActual);
     }
 
     updateQuery += " WHERE id = ? AND id_organizacion = ?";
@@ -187,10 +209,11 @@ router.post("/recuperar", async (req, res) => {
     }
 
     const idUsuario = usuarioResults[0].id;
+    const hashNueva = await hashearPassword(nueva_password);
 
     await db.query(
       "UPDATE usuarios SET password = ? WHERE id = ? AND id_organizacion = ?",
-      [nueva_password.trim(), idUsuario, idOrganizacion],
+      [hashNueva, idUsuario, idOrganizacion],
     );
 
     res.json({
@@ -241,13 +264,15 @@ router.post(
         });
       }
 
+      const passwordHasheada = await hashearPassword(password);
+
       const query =
         "INSERT INTO usuarios (id_persona, id_organizacion, nombre_usuario, password, rol) VALUES (?, ?, ?, ?, ?)";
       await db.query(query, [
         id_persona,
         req.idOrganizacion,
         nombre_usuario.trim(),
-        password.trim(),
+        passwordHasheada,
         rol,
       ]);
 

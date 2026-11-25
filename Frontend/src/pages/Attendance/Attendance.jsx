@@ -1,14 +1,16 @@
-// src/pages/Attendance/Attendance.jsx
 import { useState, useEffect } from "react";
-import api from "../../services/api"; // 👈 Ajustá la ruta si tu api.js está en otro lado
+import api from "../../services/api";
 import AttendanceCards from "./components/AttendanceCards";
 import LideresGrid from "./components/LideresGrid";
 import AttendanceList from "./components/AttendanceList";
 import AsignarAlumnoModal from "./components/AsignarAlumnoModal";
 import HistorialTab from "./components/HistorialTab";
+import { obtenerRolActual, permisosPorRol } from "../../utils/rolePermissions";
 import "./Attendance.css";
 
 export default function Attendance() {
+  const permisos = permisosPorRol(obtenerRolActual());
+
   const [activeTab, setActiveTab] = useState("tomar");
   const [ministerios, setMinisterios] = useState([]);
   const [meetingDate, setMeetingDate] = useState(
@@ -106,7 +108,6 @@ export default function Attendance() {
       });
   };
 
-  // 🔙 Función inteligente de navegación hacia atrás (Niveles)
   const handleVolver = () => {
     if (selectedLider) {
       setSelectedLider(null);
@@ -155,9 +156,9 @@ export default function Attendance() {
         </p>
       </header>
 
-      {/* Pestañas Modernas Estilo Tarjeta / Carpeta */}
       <div className="attendance-tabs-container">
         <button
+          type="button"
           className={`attendance-tab ${activeTab === "tomar" ? "active" : ""}`}
           onClick={() => {
             setActiveTab("tomar");
@@ -169,6 +170,7 @@ export default function Attendance() {
           <span className="attendance-tab-icon">📋</span> Tomar Asistencia
         </button>
         <button
+          type="button"
           className={`attendance-tab ${activeTab === "historial" ? "active" : ""}`}
           onClick={() => setActiveTab("historial")}
         >
@@ -179,7 +181,6 @@ export default function Attendance() {
 
       {activeTab === "tomar" && (
         <div>
-          {/* Cabecera dinámica SOLO cuando estamos dentro de una clase o ministerio específico */}
           {viewMode !== "cards" && (
             <div className="attendance-dynamic-header">
               <div>
@@ -194,7 +195,6 @@ export default function Attendance() {
               </div>
 
               <div className="attendance-dynamic-actions">
-                {/* 📅 Selector de Fecha Interactivo */}
                 <div className="attendance-date-picker-wrapper">
                   <span className="attendance-date-icon">📅</span>
                   <input
@@ -206,7 +206,11 @@ export default function Attendance() {
                   />
                 </div>
 
-                <button onClick={handleVolver} className="attendance-back-btn">
+                <button
+                  type="button"
+                  onClick={handleVolver}
+                  className="attendance-back-btn"
+                >
                   ← Volver
                 </button>
               </div>
@@ -239,14 +243,19 @@ export default function Attendance() {
                 setAttendanceStatus((p) => ({ ...p, [id]: st }))
               }
               onSave={handleSaveAttendance}
-              onOpenAddModal={() => setShowAddModal(true)}
+              onOpenAddModal={
+                permisos.puedeAsignarAlumnos
+                  ? () => setShowAddModal(true)
+                  : null
+              }
+              canAssignStudents={permisos.puedeAsignarAlumnos}
               setAttendanceStatus={setAttendanceStatus}
             />
           )}
         </div>
       )}
 
-      {showAddModal && (
+      {showAddModal && permisos.puedeAsignarAlumnos && (
         <AsignarAlumnoModal
           ministerio={selectedMinisterio}
           lider={selectedLider}
@@ -255,7 +264,6 @@ export default function Attendance() {
         />
       )}
 
-      {/* Renderizado de la pestaña Historial modularizada */}
       {activeTab === "historial" && <HistorialTab />}
     </section>
   );

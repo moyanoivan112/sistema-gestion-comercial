@@ -1,4 +1,3 @@
-// src/pages/Registry/Registry.jsx
 import "./Registry.css";
 import MembersTable from "./components/MembersTable";
 import MemberForm from "./components/MemberForm";
@@ -6,6 +5,7 @@ import RegistryToolbar from "./components/RegistryToolbar";
 import Pagination from "./components/Pagination";
 import InactiveMembers from "./InactiveMembers";
 import { useRegistry } from "./hooks/useRegistry";
+import { obtenerRolActual, permisosPorRol } from "../../utils/rolePermissions";
 
 export default function Registry() {
   const {
@@ -31,6 +31,12 @@ export default function Registry() {
     handleDeleteMember,
   } = useRegistry();
 
+  const permisos = permisosPorRol(obtenerRolActual());
+  const vistaActiva =
+    currentView === "inactive" && !permisos.puedeVerInactivos
+      ? "active"
+      : currentView;
+
   return (
     <section className="registry-module">
       <header className="registry-header">
@@ -41,21 +47,25 @@ export default function Registry() {
       {/* Contenedor de Pestañas con Clases CSS */}
       <div className="registry-tabs-container">
         <button
+          type="button"
           onClick={() => setCurrentView("active")}
-          className={`registry-tab-btn ${currentView === "active" ? "active" : ""}`}
+          className={`registry-tab-btn ${vistaActiva === "active" ? "active" : ""}`}
         >
           📋 Todos los Registros
         </button>
-        <button
-          onClick={() => setCurrentView("inactive")}
-          className={`registry-tab-btn ${currentView === "inactive" ? "active" : ""}`}
-        >
-          🗑️ Miembros Inactivos
-        </button>
+        {permisos.puedeVerInactivos && (
+          <button
+            type="button"
+            onClick={() => setCurrentView("inactive")}
+            className={`registry-tab-btn ${vistaActiva === "inactive" ? "active" : ""}`}
+          >
+            🗑️ Miembros Inactivos
+          </button>
+        )}
       </div>
 
       {/* Contenido condicional según la pestaña seleccionada */}
-      {currentView === "active" ? (
+      {vistaActiva === "active" ? (
         <>
           <RegistryToolbar
             searchTerm={searchTerm}
@@ -66,15 +76,22 @@ export default function Registry() {
             onGeneroChange={handleGeneroChange}
             sortBy={sortBy}
             onSortChange={handleSortChange}
-            onAddClick={() => handleOpenForm()}
+            onAddClick={
+              permisos.puedeCrearEditarPersona
+                ? () => handleOpenForm()
+                : undefined
+            }
+            canAdd={permisos.puedeCrearEditarPersona}
           />
 
           <br />
 
           <MembersTable
             data={currentRows}
-            onEdit={handleOpenForm}
-            onDelete={handleDeleteMember}
+            onEdit={permisos.puedeCrearEditarPersona ? handleOpenForm : null}
+            onDelete={permisos.puedeDarBajaPersona ? handleDeleteMember : null}
+            canEdit={permisos.puedeCrearEditarPersona}
+            canDelete={permisos.puedeDarBajaPersona}
           />
 
           <Pagination
@@ -87,7 +104,7 @@ export default function Registry() {
         <InactiveMembers />
       )}
 
-      {isFormOpen && (
+      {isFormOpen && permisos.puedeCrearEditarPersona && (
         <MemberForm
           initialData={memberToEdit}
           onClose={handleCloseForm}
