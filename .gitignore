@@ -1,11 +1,8 @@
 node_modules/
-dist/
-build/
+Backend/node_modules/
+Frontend/node_modules/
+Frontend/dist/
 .env
-.env.*
-!.env.example
+Backend/.env
+Frontend/.env
 *.log
-.DS_Store
-Thumbs.db
-Backend/backups/*.json
-Frontend/para_correr_Backend.tetx

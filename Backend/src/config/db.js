@@ -7,7 +7,7 @@ const pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "tu_contraseña_aqui", // Cambiala por tu clave de MySQL
-  database: process.env.DB_NAME || "sistema_congregacional",
+  database: process.env.DB_NAME || "sistema_congregacional_comercial",
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
@@ -31,7 +31,9 @@ pool.getConnection((err, connection) => {
     return;
   }
   if (connection) {
-    console.log("¡Conexión exitosa a la base de datos sistema_congregacional!");
+    console.log(
+      "¡Conexión exitosa a la base de datos sistema_congregacional_comercial!",
+    );
     connection.release();
   }
 });

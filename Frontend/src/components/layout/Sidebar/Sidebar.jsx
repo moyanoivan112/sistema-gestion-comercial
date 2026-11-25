@@ -112,7 +112,9 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
               alt="Logo Gestión Congregacional"
               className="sidebar-logo-ancho"
             />
-            {/* <h3 className="sidebar-app-title">Gestión Congregacional</h3> */}
+            <h3 className="sidebar-app-title">
+              Version comercial en desarrollo
+            </h3>
             <button
               type="button"
               className="sidebar-close-btn"

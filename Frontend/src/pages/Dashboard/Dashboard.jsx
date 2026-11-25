@@ -101,6 +101,9 @@ export default function Dashboard() {
         {/* Columna Izquierda: Encabezado + Acciones Rápidas */}
         <div className="dashboard-left-group">
           <header className="dashboard-header">
+            <h2 className="sidebar-app-title">
+              Version comercial en desarrollo
+            </h2>
             <h2>
               <strong>
                 {getGreeting()}, {user?.nombre}
