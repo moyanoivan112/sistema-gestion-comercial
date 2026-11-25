@@ -33,36 +33,48 @@ const getMinisteriosByPersona = async (req, res) => {
 
 // 3. Asignar ministerios a una persona (Sincronizar / Reemplazar o Agregar)
 const actualizarMinisteriosPersona = async (req, res) => {
+  const { idPersona } = req.params;
+  const { ministeriosIds } = req.body;
+
+  if (!Array.isArray(ministeriosIds)) {
+    return res
+      .status(400)
+      .json({ mensaje: "El formato de ministerios debe ser un arreglo." });
+  }
+
+  let connection;
   try {
-    const { idPersona } = req.params;
-    const { ministeriosIds } = req.body; // Array de IDs de ministerios, ej: [1, 3]
+    connection = await db.getConnection();
+    await connection.beginTransaction();
 
-    if (!Array.isArray(ministeriosIds)) {
-      return res
-        .status(400)
-        .json({ mensaje: "El formato de ministerios debe ser un arreglo." });
-    }
+    await connection.query(
+      "DELETE FROM personas_ministerios WHERE id_persona = ?",
+      [idPersona],
+    );
 
-    // Primero eliminamos las asignaciones anteriores para evitar duplicados y actualizar limpiamente
-    await db.query("DELETE FROM personas_ministerios WHERE id_persona = ?", [
-      idPersona,
-    ]);
-
-    // Luego insertamos las nuevas selecciones si existen
     if (ministeriosIds.length > 0) {
       const values = ministeriosIds.map((id_ministerio) => [
         idPersona,
         id_ministerio,
       ]);
-      const insertQuery =
-        "INSERT INTO personas_ministerios (id_persona, id_ministerio) VALUES ?";
-      await db.query(insertQuery, [values]);
+      await connection.query(
+        "INSERT INTO personas_ministerios (id_persona, id_ministerio) VALUES ?",
+        [values],
+      );
     }
 
+    await connection.commit();
     res.json({ mensaje: "Ministerios actualizados correctamente 👥" });
   } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.error("Error al actualizar ministerios de la persona:", error);
     res.status(500).json({ mensaje: "Error interno del servidor" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 

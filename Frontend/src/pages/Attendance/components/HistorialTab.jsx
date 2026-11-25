@@ -2,25 +2,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../services/api";
 import "./HistorialTab.css";
-
-// Subcomponente Modal Interno para Ver el Detalle de la Asistencia del Día
-function DetalleAsistenciaModal({
-  fecha,
-  idMinisterio,
-  nombreMinisterio,
-  onClose,
-}) {
-  const [detalle, setDetalle] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Función auxiliar para formatear la fecha a formato local argentino (DD/MM/AAAA)
-  const formatearFecha = (fechaStr) => {
-    if (!fechaStr) return "-";
-    const soloFecha = fechaStr.split("T")[0];
-    const [anio, mes, dia] = soloFecha.split("-");
-    if (!anio || !mes || !dia) return soloFecha;
-    return `${dia}/${mes}/${anio}`;
-  };
+import DetalleAsistenciaModal from "./DetalleAsistenciaModal";
 
   useEffect(() => {
     const fetchDetalle = async () => {
@@ -235,13 +217,13 @@ export default function HistorialTab() {
 
       {/* Modal de Detalle */}
       {modalData && (
-        <DetalleAsistenciaModal
-          fecha={modalData.fecha_registro.split("T")[0]}
-          idMinisterio={modalData.id_ministerio}
-          nombreMinisterio={modalData.nombre_ministerio}
-          onClose={() => setModalData(null)}
-        />
-      )}
+  <DetalleAsistenciaModal
+    fecha={String(modalData.fecha_registro).split("T")[0]}
+    idMinisterio={modalData.id_ministerio}
+    nombreMinisterio={modalData.nombre_ministerio}
+    onClose={() => setModalData(null)}
+  />
+)}
     </div>
   );
 }

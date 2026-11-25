@@ -1,45 +1,28 @@
-// src/controllers/backupController.js
-const db = require("../config/db"); // Ajusta según tu ruta real de conexión a MySQL
+const db = require("../config/db");
 
 const exportarBackup = async (req, res) => {
   try {
-    // Consultamos usando los nombres exactos de tu base de datos
-    let personas = [];
-    let ministerios = [];
-    let usuarios = [];
-    let personasMinisterios = [];
-    let asistencia = [];
+    const consultaSegura = async (sql, nombreTabla) => {
+      try {
+        const [rows] = await db.query(sql);
+        return Array.isArray(rows) ? rows : [];
+      } catch (e) {
+        console.warn(`Tabla ${nombreTabla} no disponible o vacía:`, e.message);
+        return [];
+      }
+    };
 
-    try {
-      const [res] = await db.query("SELECT * FROM personas");
-      personas = res;
-    } catch (e) {
-      console.log("personas vacía");
-    }
-    try {
-      const [res] = await db.query("SELECT * FROM ministerios");
-      ministerios = res;
-    } catch (e) {
-      console.log("ministerios vacía");
-    }
-    try {
-      const [res] = await db.query("SELECT * FROM usuarios");
-      usuarios = res;
-    } catch (e) {
-      console.log("usuarios vacía");
-    }
-    try {
-      const [res] = await db.query("SELECT * FROM personas_ministerios");
-      personasMinisterios = res;
-    } catch (e) {
-      console.log("personas_ministerios vacía");
-    }
-    try {
-      const [res] = await db.query("SELECT * FROM asistencia");
-      asistencia = res;
-    } catch (e) {
-      console.log("asistencia vacía");
-    }
+    const [personas, ministerios, usuarios, personasMinisterios, asistencia] =
+      await Promise.all([
+        consultaSegura("SELECT * FROM personas", "personas"),
+        consultaSegura("SELECT * FROM ministerios", "ministerios"),
+        consultaSegura("SELECT * FROM usuarios", "usuarios"),
+        consultaSegura(
+          "SELECT * FROM personas_ministerios",
+          "personas_ministerios",
+        ),
+        consultaSegura("SELECT * FROM asistencia", "asistencia"),
+      ]);
 
     const backupData = {
       version: "1.0",
@@ -63,57 +46,81 @@ const exportarBackup = async (req, res) => {
     return res.status(200).send(JSON.stringify(backupData, null, 2));
   } catch (err) {
     console.error("Error crítico al generar el backup:", err);
-    return res
-      .status(500)
-      .json({
-        error: "Error en el servidor al generar el backup: " + err.message,
-      });
+    return res.status(500).json({
+      error: "Error en el servidor al generar el backup: " + err.message,
+    });
   }
 };
 
 const importarBackup = async (req, res) => {
+  const { tablas } = req.body || {};
+
+  if (!tablas || !Array.isArray(tablas.personas)) {
+    return res.status(400).json({
+      error: "El archivo de respaldo no es válido o está incompleto.",
+    });
+  }
+
+  let connection;
   try {
-    const { tablas } = req.body;
+    connection = await db.getConnection();
+    await connection.beginTransaction();
+    await connection.query("SET FOREIGN_KEY_CHECKS = 0");
 
-    if (!tablas || !tablas.personas) {
-      return res
-        .status(400)
-        .json({
-          error: "El archivo de respaldo no es válido o está incompleto.",
-        });
-    }
+    if (tablas.personas.length > 0) {
+      const queryPersona = `
+        INSERT INTO personas (
+          id, nombre, apellido, dni, email, telefono,
+          bautizado, en_discipulado, activo
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+          nombre = VALUES(nombre),
+          apellido = VALUES(apellido),
+          dni = VALUES(dni),
+          email = VALUES(email),
+          telefono = VALUES(telefono),
+          bautizado = VALUES(bautizado),
+          en_discipulado = VALUES(en_discipulado),
+          activo = VALUES(activo)
+      `;
 
-    await db.query("SET FOREIGN_KEY_CHECKS = 0;");
-
-    if (Array.isArray(tablas.personas) && tablas.personas.length > 0) {
       for (const p of tablas.personas) {
-        const query = `
-          INSERT INTO personas (id, nombre, apellido, dni, email, telefono, bautizado, en_discipulado, activo) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-          ON DUPLICATE KEY UPDATE nombre=VALUES(nombre), apellido=VALUES(apellido);
-        `;
-        await db.query(query, [
+        await connection.query(queryPersona, [
           p.id || null,
           p.nombre || "",
           p.apellido || "",
           p.dni || null,
           p.email || null,
           p.telefono || null,
-          p.bautizado || 0,
-          p.en_discipulado || 0,
-          p.activo !== undefined ? p.activo : 1,
+          p.bautizado ? 1 : 0,
+          p.en_discipulado ? 1 : 0,
+          p.activo !== undefined ? (p.activo ? 1 : 0) : 1,
         ]);
       }
     }
 
-    await db.query("SET FOREIGN_KEY_CHECKS = 1;");
+    await connection.query("SET FOREIGN_KEY_CHECKS = 1");
+    await connection.commit();
+
     return res.json({ mensaje: "¡Copia de seguridad restaurada con éxito!" });
   } catch (err) {
-    await db.query("SET FOREIGN_KEY_CHECKS = 1;");
+    if (connection) {
+      try {
+        await connection.query("SET FOREIGN_KEY_CHECKS = 1");
+        await connection.rollback();
+      } catch (rollbackErr) {
+        console.error("Error al revertir transacción de backup:", rollbackErr);
+      }
+    }
     console.error("Error al restaurar backup:", err);
-    return res
-      .status(500)
-      .json({ error: "Error al procesar la importación: " + err.message });
+    return res.status(500).json({
+      error: "Error al procesar la importación: " + err.message,
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
