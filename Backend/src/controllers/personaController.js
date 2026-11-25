@@ -1,22 +1,26 @@
 const db = require("../config/db");
 
+const getOrgId = (req) => req.idOrganizacion ?? req.user?.id_organizacion ?? 1;
+
 // Función auxiliar para normalizar el campo genero
 const normalizarGenero = (valor) => {
   if (valor === "Masculino" || valor === "Femenino") return valor;
   return null;
 };
 
-// 1. Obtener todas las personas con su rol del sistema (si lo tienen)
+// 1. Obtener todas las personas de la organización con su rol del sistema (si lo tienen)
 const getPersonas = async (req, res) => {
   try {
+    const idOrganizacion = getOrgId(req);
     const query = `
       SELECT p.*, u.rol AS rol_sistema, u.nombre_usuario 
-      FROM Personas p 
-      LEFT JOIN usuarios u ON p.id = u.id_persona
-      WHERE p.activo = 1 
+      FROM personas p 
+      LEFT JOIN usuarios u 
+        ON p.id = u.id_persona AND u.id_organizacion = ?
+      WHERE p.activo = 1 AND p.id_organizacion = ?
       ORDER BY p.apellido ASC
     `;
-    const [rows] = await db.query(query);
+    const [rows] = await db.query(query, [idOrganizacion, idOrganizacion]);
     res.json(rows);
   } catch (error) {
     console.error("Error al obtener personas:", error);
@@ -27,35 +31,47 @@ const getPersonas = async (req, res) => {
 // 2. Obtener estadísticas generales, operativas y comparativas de asistencia para el Dashboard
 const getDashboardStats = async (req, res) => {
   try {
+    const idOrganizacion = getOrgId(req);
+
     // 1. Nuevos registros del mes actual
-    const [nuevosRows] = await db.query(`
+    const [nuevosRows] = await db.query(
+      `
       SELECT COUNT(*) as total 
-      FROM Personas 
+      FROM personas 
       WHERE activo = 1 
+        AND id_organizacion = ?
         AND MONTH(fecha_registro) = MONTH(CURDATE()) 
         AND YEAR(fecha_registro) = YEAR(CURDATE())
-    `);
+    `,
+      [idOrganizacion],
+    );
 
     // 2. Pendientes de mentoría (Miembros activos que NO están en discipulado)
-    const [pendientesRows] = await db.query(`
+    const [pendientesRows] = await db.query(
+      `
       SELECT COUNT(*) as total 
-      FROM Personas 
-      WHERE activo = 1 AND (en_discipulado = 0 OR en_discipulado IS NULL)
-    `);
+      FROM personas 
+      WHERE activo = 1 
+        AND id_organizacion = ?
+        AND (en_discipulado = 0 OR en_discipulado IS NULL)
+    `,
+      [idOrganizacion],
+    );
 
     // Función que busca las últimas dos fechas y conteos filtrando por el Nombre del Ministerio
     const getComparativaPorNombre = async (nombreMinisterio) => {
-      // Obtenemos las últimas 2 fechas distintas registradas para este ministerio por su nombre
       const [fechas] = await db.query(
         `
         SELECT DISTINCT a.fecha_registro 
         FROM asistencia a
         JOIN ministerios m ON a.id_ministerio = m.id
         WHERE m.nombre LIKE ?
+          AND a.id_organizacion = ?
+          AND m.id_organizacion = ?
         ORDER BY a.fecha_registro DESC 
         LIMIT 2
       `,
-        [`%${nombreMinisterio}%`],
+        [`%${nombreMinisterio}%`, idOrganizacion, idOrganizacion],
       );
 
       if (fechas.length === 0) {
@@ -65,20 +81,22 @@ const getDashboardStats = async (req, res) => {
       const fechaUltima = fechas[0].fecha_registro;
       const fechaAnterior = fechas.length > 1 ? fechas[1].fecha_registro : null;
 
-      // Conteo de presentes en la última fecha
       const [resUltima] = await db.query(
         `
         SELECT COUNT(*) as total 
         FROM asistencia a
         JOIN ministerios m ON a.id_ministerio = m.id
-        WHERE a.fecha_registro = ? AND m.nombre LIKE ? AND a.presente = 1
+        WHERE a.fecha_registro = ? 
+          AND m.nombre LIKE ? 
+          AND a.presente = 1
+          AND a.id_organizacion = ?
+          AND m.id_organizacion = ?
       `,
-        [fechaUltima, `%${nombreMinisterio}%`],
+        [fechaUltima, `%${nombreMinisterio}%`, idOrganizacion, idOrganizacion],
       );
 
       const totalUltima = resUltima[0].total || 0;
 
-      // Conteo de presentes en la fecha anterior (si existe)
       let totalAnterior = 0;
       if (fechaAnterior) {
         const [resAnterior] = await db.query(
@@ -86,9 +104,18 @@ const getDashboardStats = async (req, res) => {
           SELECT COUNT(*) as total 
           FROM asistencia a
           JOIN ministerios m ON a.id_ministerio = m.id
-          WHERE a.fecha_registro = ? AND m.nombre LIKE ? AND a.presente = 1
+          WHERE a.fecha_registro = ? 
+            AND m.nombre LIKE ? 
+            AND a.presente = 1
+            AND a.id_organizacion = ?
+            AND m.id_organizacion = ?
         `,
-          [fechaAnterior, `%${nombreMinisterio}%`],
+          [
+            fechaAnterior,
+            `%${nombreMinisterio}%`,
+            idOrganizacion,
+            idOrganizacion,
+          ],
         );
         totalAnterior = resAnterior[0].total || 0;
       }
@@ -106,7 +133,6 @@ const getDashboardStats = async (req, res) => {
       };
     };
 
-    // Consultamos por los nombres exactos que se muestran en el historial de asistencias
     const cenaDelSenor = await getComparativaPorNombre("Cena del Señor");
     const reunionGeneral = await getComparativaPorNombre("Reunión General");
 
@@ -125,33 +151,37 @@ const getDashboardStats = async (req, res) => {
 // Obtener la tendencia independiente de las últimas reuniones por cada ministerio
 const getDashboardAttendanceTrend = async (req, res) => {
   try {
-    // 1. Obtener todos los ministerios activos
-    const [ministerios] = await db.query(`SELECT id, nombre FROM ministerios`);
+    const idOrganizacion = getOrgId(req);
+    const [ministerios] = await db.query(
+      `SELECT id, nombre FROM ministerios WHERE id_organizacion = ?`,
+      [idOrganizacion],
+    );
 
     const tendenciasPorMinisterio = {};
 
     for (const min of ministerios) {
-      // 1.1. Obtener el total de personas inscriptas/asignadas a este ministerio
       const [inscritosRows] = await db.query(
         `
         SELECT COUNT(*) as total 
-        FROM personas_ministerios 
-        WHERE id_ministerio = ?
+        FROM personas_ministerios pm
+        JOIN personas p ON pm.id_persona = p.id
+        WHERE pm.id_ministerio = ?
+          AND p.id_organizacion = ?
+          AND p.activo = 1
       `,
-        [min.id],
+        [min.id, idOrganizacion],
       );
       const totalInscritos = inscritosRows[0]?.total || 0;
 
-      // 2. Para cada ministerio, obtener sus últimas fechas registradas
       const [fechasRows] = await db.query(
         `
         SELECT DISTINCT a.fecha_registro 
         FROM asistencia a
-        WHERE a.id_ministerio = ?
+        WHERE a.id_ministerio = ? AND a.id_organizacion = ?
         ORDER BY a.fecha_registro DESC 
         LIMIT 6
       `,
-        [min.id],
+        [min.id, idOrganizacion],
       );
 
       if (fechasRows.length === 0) {
@@ -169,20 +199,22 @@ const getDashboardAttendanceTrend = async (req, res) => {
         const fechaObj = new Date(fecha);
         const etiquetaFecha = `${fechaObj.getUTCDate()}/${fechaObj.getUTCMonth() + 1}`;
 
-        // Contar presentes en esa fecha para este ministerio
         const [conteo] = await db.query(
           `
           SELECT COUNT(*) as total 
           FROM asistencia 
-          WHERE id_ministerio = ? AND DATE(fecha_registro) = DATE(?) AND presente = 1
+          WHERE id_ministerio = ? 
+            AND id_organizacion = ?
+            AND DATE(fecha_registro) = DATE(?) 
+            AND presente = 1
         `,
-          [min.id, fecha],
+          [min.id, idOrganizacion, fecha],
         );
 
         historialMinisterio.push({
           fecha: etiquetaFecha,
           asistentes: conteo[0].total || 0,
-          inscritos: totalInscritos, // 👈 Inyectamos el total de inscriptos aquí
+          inscritos: totalInscritos,
         });
       }
 
@@ -196,11 +228,15 @@ const getDashboardAttendanceTrend = async (req, res) => {
   }
 };
 
-// 3. Obtener una persona por ID
+// 3. Obtener una persona por ID dentro de la organización
 const getPersonaById = async (req, res) => {
   try {
+    const idOrganizacion = getOrgId(req);
     const { id } = req.params;
-    const [rows] = await db.query("SELECT * FROM Personas WHERE id = ?", [id]);
+    const [rows] = await db.query(
+      "SELECT * FROM personas WHERE id = ? AND id_organizacion = ?",
+      [id, idOrganizacion],
+    );
 
     if (rows.length === 0) {
       return res.status(404).json({ mensaje: "Persona no encontrada" });
@@ -213,9 +249,10 @@ const getPersonaById = async (req, res) => {
   }
 };
 
-// 4. Registrar una nueva persona (Con auto-asignación inicial de ministerios)
+// 4. Registrar una nueva persona (Con auto-asignación inicial de ministerios de la organización)
 const createPersona = async (req, res) => {
   try {
+    const idOrganizacion = getOrgId(req);
     const {
       nombre,
       apellido,
@@ -246,14 +283,15 @@ const createPersona = async (req, res) => {
       : new Date().toISOString().split("T")[0];
 
     const query = `
-      INSERT INTO Personas 
-      (nombre, apellido, dni, email, fecha_nacimiento, genero, direccion, telefono, contacto_referencia, bautizado, en_discipulado, discipulador, fecha_registro) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO personas 
+      (id_organizacion, nombre, apellido, dni, email, fecha_nacimiento, genero, direccion, telefono, contacto_referencia, bautizado, en_discipulado, discipulador, fecha_registro) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const isBautizadoBool = bautizado ? 1 : 0;
 
     const [result] = await db.query(query, [
+      idOrganizacion,
       nombre,
       apellido,
       dni || null,
@@ -274,7 +312,8 @@ const createPersona = async (req, res) => {
     // --- AUTO-ASIGNACIÓN INICIAL DE MINISTERIOS POR EDAD Y BAUTISMO ---
     try {
       const [ministerios] = await db.query(
-        "SELECT * FROM ministerios WHERE activo = 1",
+        "SELECT * FROM ministerios WHERE activo = 1 AND id_organizacion = ?",
+        [idOrganizacion],
       );
       const hoy = new Date();
       const nacimiento = new Date(fecha_nacimiento);
@@ -302,7 +341,6 @@ const createPersona = async (req, res) => {
     } catch (autoErr) {
       console.error("Error en auto-asignación de ministerios:", autoErr);
     }
-    // -----------------------------------------------------------------
 
     res.status(201).json({
       id: personaId,
@@ -319,9 +357,10 @@ const createPersona = async (req, res) => {
   }
 };
 
-// 5. Actualizar una persona
+// 5. Actualizar una persona dentro de la organización
 const updatePersona = async (req, res) => {
   try {
+    const idOrganizacion = getOrgId(req);
     const { id } = req.params;
     const {
       nombre,
@@ -349,9 +388,9 @@ const updatePersona = async (req, res) => {
       : new Date().toISOString().split("T")[0];
 
     const query = `
-      UPDATE Personas 
+      UPDATE personas 
       SET nombre = ?, apellido = ?, dni = ?, email = ?, fecha_nacimiento = ?, genero = ?, direccion = ?, telefono = ?, contacto_referencia = ?, bautizado = ?, en_discipulado = ?, discipulador = ?, fecha_registro = ? 
-      WHERE id = ?
+      WHERE id = ? AND id_organizacion = ?
     `;
 
     const [result] = await db.query(query, [
@@ -369,6 +408,7 @@ const updatePersona = async (req, res) => {
       en_discipulado ? discipulador || null : null,
       fechaLimpiaRegistro,
       id,
+      idOrganizacion,
     ]);
 
     if (result.affectedRows === 0) {
@@ -387,7 +427,7 @@ const updatePersona = async (req, res) => {
   }
 };
 
-// 6. Eliminar una persona
+// 6. Dar de baja a una persona dentro de la organización
 const deletePersona = async (req, res) => {
   if (req.user.rol !== "Administrador" && req.user.rol !== "Pastor") {
     return res.status(403).json({
@@ -396,9 +436,11 @@ const deletePersona = async (req, res) => {
   }
 
   try {
+    const idOrganizacion = getOrgId(req);
     const { id } = req.params;
-    const query = "UPDATE Personas SET activo = 0 WHERE id = ?";
-    const [result] = await db.query(query, [id]);
+    const query =
+      "UPDATE personas SET activo = 0 WHERE id = ? AND id_organizacion = ?";
+    const [result] = await db.query(query, [id, idOrganizacion]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ mensaje: "Persona no encontrada" });
@@ -411,15 +453,16 @@ const deletePersona = async (req, res) => {
   }
 };
 
-// 7. Obtener solo las personas dadas de baja (inactivas)
+// 7. Obtener solo las personas dadas de baja (inactivas) de la organización
 const getPersonasInactivas = async (req, res) => {
   try {
+    const idOrganizacion = getOrgId(req);
     const query = `
-      SELECT * FROM Personas 
-      WHERE activo = 0 
+      SELECT * FROM personas 
+      WHERE activo = 0 AND id_organizacion = ?
       ORDER BY apellido ASC
     `;
-    const [rows] = await db.query(query);
+    const [rows] = await db.query(query, [idOrganizacion]);
     res.json(rows);
   } catch (error) {
     console.error("Error al obtener personas inactivas:", error);
@@ -427,12 +470,14 @@ const getPersonasInactivas = async (req, res) => {
   }
 };
 
-// 8. Dar de alta nuevamente a una persona (Restaurar)
+// 8. Dar de alta nuevamente a una persona (Restaurar) dentro de la organización
 const reactivarPersona = async (req, res) => {
   try {
+    const idOrganizacion = getOrgId(req);
     const { id } = req.params;
-    const query = "UPDATE Personas SET activo = 1 WHERE id = ?";
-    const [result] = await db.query(query, [id]);
+    const query =
+      "UPDATE personas SET activo = 1 WHERE id = ? AND id_organizacion = ?";
+    const [result] = await db.query(query, [id, idOrganizacion]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ mensaje: "Persona no encontrada" });

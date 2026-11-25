@@ -1,9 +1,10 @@
-// src/routes/memberRoutes.js
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const verificarToken = require("../middlewares/authMiddleware");
 
-router.post("/registrar", async (req, res) => {
+router.post("/registrar", verificarToken, async (req, res) => {
+  const idOrganizacion = req.idOrganizacion ?? req.user?.id_organizacion ?? 1;
   const {
     nombre,
     apellido,
@@ -24,7 +25,6 @@ router.post("/registrar", async (req, res) => {
       .json({ error: "Nombre, apellido y DNI son obligatorios." });
   }
 
-  // Si marcó dar acceso, exigimos usuario, contraseña y un email válido
   if (darAcceso && (!nombre_usuario || !password || !email)) {
     return res.status(400).json({
       error:
@@ -32,15 +32,16 @@ router.post("/registrar", async (req, res) => {
     });
   }
 
+  let connection;
   try {
-    // Iniciamos transacción para asegurar la integridad de los datos
-    await db.query("START TRANSACTION");
+    connection = await db.getConnection();
+    await connection.beginTransaction();
 
-    // 1. Insertamos a la persona (el email puede ser null o vacío si no tiene)
-    const [resultPersona] = await db.query(
-      `INSERT INTO personas (nombre, apellido, dni, email, fecha_nacimiento, direccion, telefono, fecha_registro) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+    const [resultPersona] = await connection.query(
+      `INSERT INTO personas (id_organizacion, nombre, apellido, dni, email, fecha_nacimiento, direccion, telefono, fecha_registro) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
+        idOrganizacion,
         nombre.trim(),
         apellido.trim(),
         dni.trim(),
@@ -53,18 +54,25 @@ router.post("/registrar", async (req, res) => {
 
     const idPersona = resultPersona.insertId;
 
-    // 2. Si marcó "dar acceso", insertamos el usuario vinculado
     if (darAcceso) {
-      await db.query(
-        "INSERT INTO usuarios (id_persona, nombre_usuario, password, rol) VALUES (?, ?, ?, ?)",
-        [idPersona, nombre_usuario.trim(), password.trim(), rol],
+      await connection.query(
+        "INSERT INTO usuarios (id_persona, id_organizacion, nombre_usuario, password, rol) VALUES (?, ?, ?, ?, ?)",
+        [
+          idPersona,
+          idOrganizacion,
+          nombre_usuario.trim(),
+          password.trim(),
+          rol,
+        ],
       );
     }
 
-    await db.query("COMMIT");
+    await connection.commit();
     res.json({ mensaje: "¡Miembro registrado correctamente en el sistema!" });
   } catch (err) {
-    await db.query("ROLLBACK");
+    if (connection) {
+      await connection.rollback();
+    }
     console.error("❌ Error al registrar miembro:", err);
     if (err.code === "ER_DUP_ENTRY") {
       return res.status(400).json({
@@ -72,6 +80,10 @@ router.post("/registrar", async (req, res) => {
       });
     }
     res.status(500).json({ error: "Error en el servidor de base de datos" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 });
 

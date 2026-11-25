@@ -1,14 +1,14 @@
-// src/routes/authRoutes.js
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const jwt = require("jsonwebtoken");
+const verificarToken = require("../middlewares/authMiddleware");
+const autorizarRoles = require("../middlewares/roleMiddleware");
 
 // ==========================================
-// RUTA DE LOGIN
+// RUTA DE LOGIN (con organización y marca blanca)
 // ==========================================
 router.post("/login", async (req, res) => {
-  console.log("-> ¡Ruta /api/auth/login alcanzada con éxito!", req.body);
   const { nombre_usuario, password } = req.body;
 
   if (!nombre_usuario || !password) {
@@ -16,16 +16,23 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    // MODIFICACIÓN: Hacemos un JOIN con la tabla personas para traer el nombre y apellido
     const query = `
-      SELECT u.*, p.nombre, p.apellido 
-      FROM usuarios u 
+      SELECT 
+        u.*, 
+        p.nombre, 
+        p.apellido,
+        o.nombre AS organizacion_nombre,
+        o.slug AS organizacion_slug,
+        o.logo_url AS organizacion_logo_url,
+        o.color_primario AS organizacion_color_primario,
+        o.color_secundario AS organizacion_color_secundario,
+        o.activo AS organizacion_activa
+      FROM usuarios u
       JOIN personas p ON u.id_persona = p.id
+      LEFT JOIN organizaciones o ON COALESCE(u.id_organizacion, 1) = o.id
       WHERE u.nombre_usuario = ?
     `;
     const [results] = await db.query(query, [nombre_usuario.trim()]);
-
-    console.log("-> Resultados de MySQL:", results);
 
     if (results.length === 0) {
       return res
@@ -41,24 +48,43 @@ router.post("/login", async (req, res) => {
         .json({ error: "Usuario o contraseña incorrectos" });
     }
 
-    // Generamos el token que expira en 8 horas (por ejemplo)
+    if (usuario.organizacion_activa === 0) {
+      return res.status(403).json({
+        error: "La organización asociada a este usuario se encuentra inactiva.",
+      });
+    }
+
+    const idOrganizacion = usuario.id_organizacion ?? 1;
+
     const token = jwt.sign(
-      { id: usuario.id, rol: usuario.rol },
+      {
+        id: usuario.id,
+        rol: usuario.rol,
+        id_organizacion: idOrganizacion,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "8h" },
     );
 
-    console.log("-> Login exitoso para el usuario:", usuario.nombre_usuario);
     res.json({
       mensaje: "Login exitoso",
       token,
       usuario: {
         id: usuario.id,
         id_persona: usuario.id_persona,
+        id_organizacion: idOrganizacion,
         nombre_usuario: usuario.nombre_usuario,
-        nombre: usuario.nombre, // <-- MODIFICACIÓN: Enviamos el nombre real
-        apellido: usuario.apellido, // <-- MODIFICACIÓN: Opcional, por si quieres usar el apellido también
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
         rol: usuario.rol,
+      },
+      organizacion: {
+        id: idOrganizacion,
+        nombre: usuario.organizacion_nombre || "Organización Principal",
+        slug: usuario.organizacion_slug || "organizacion-principal",
+        logo_url: usuario.organizacion_logo_url || null,
+        color_primario: usuario.organizacion_color_primario || null,
+        color_secundario: usuario.organizacion_color_secundario || null,
       },
     });
   } catch (err) {
@@ -68,12 +94,17 @@ router.post("/login", async (req, res) => {
       .json({ error: "Error en el servidor de base de datos" });
   }
 });
+
 // ==========================================
 // RUTA DE ACTUALIZACIÓN DE PERFIL / USUARIO
 // ==========================================
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", verificarToken, async (req, res) => {
   const { id } = req.params;
   const { nombre_usuario, password_actual, password_nueva } = req.body;
+
+  if (Number(req.user.id) !== Number(id) && req.user.rol !== "Administrador") {
+    return res.status(403).json({ error: "No podés modificar otro usuario." });
+  }
 
   if (!nombre_usuario || !password_actual) {
     return res.status(400).json({
@@ -82,8 +113,10 @@ router.put("/update/:id", async (req, res) => {
   }
 
   try {
-    // 1. Verificamos que el usuario exista y la contraseña actual sea correcta
-    const [users] = await db.query("SELECT * FROM usuarios WHERE id = ?", [id]);
+    const [users] = await db.query(
+      "SELECT * FROM usuarios WHERE id = ? AND id_organizacion = ?",
+      [id, req.idOrganizacion],
+    );
 
     if (users.length === 0) {
       return res.status(404).json({ error: "Usuario no encontrado" });
@@ -97,20 +130,17 @@ router.put("/update/:id", async (req, res) => {
         .json({ error: "La contraseña actual es incorrecta" });
     }
 
-    // 2. Preparamos la consulta de actualización dinámica
     let updateQuery = "UPDATE usuarios SET nombre_usuario = ?";
-    let queryParams = [nombre_usuario.trim()];
+    const queryParams = [nombre_usuario.trim()];
 
-    // Si mandó una contraseña nueva, la actualizamos también
     if (password_nueva && password_nueva.trim() !== "") {
       updateQuery += ", password = ?";
       queryParams.push(password_nueva.trim());
     }
 
-    updateQuery += " WHERE id = ?";
-    queryParams.push(id);
+    updateQuery += " WHERE id = ? AND id_organizacion = ?";
+    queryParams.push(id, req.idOrganizacion);
 
-    // 3. Ejecutamos el update en MySQL
     await db.query(updateQuery, queryParams);
 
     res.json({ mensaje: "Perfil actualizado correctamente" });
@@ -131,10 +161,8 @@ router.post("/recuperar", async (req, res) => {
   }
 
   try {
-    // 1. Buscamos en la tabla personas si existe una coincidencia con el DNI y el correo
-    // (Ajusta los nombres de las columnas 'dni' y 'email' según tu base de datos)
     const [personaResults] = await db.query(
-      "SELECT id FROM personas WHERE dni = ? AND email = ?",
+      "SELECT id, id_organizacion FROM personas WHERE dni = ? AND email = ?",
       [dni.trim(), email.trim()],
     );
 
@@ -145,11 +173,11 @@ router.post("/recuperar", async (req, res) => {
     }
 
     const idPersona = personaResults[0].id;
+    const idOrganizacion = personaResults[0].id_organizacion ?? 1;
 
-    // 2. Buscamos el usuario asociado a ese id_persona
     const [usuarioResults] = await db.query(
-      "SELECT id FROM usuarios WHERE id_persona = ?",
-      [idPersona],
+      "SELECT id FROM usuarios WHERE id_persona = ? AND id_organizacion = ?",
+      [idPersona, idOrganizacion],
     );
 
     if (usuarioResults.length === 0) {
@@ -160,14 +188,13 @@ router.post("/recuperar", async (req, res) => {
 
     const idUsuario = usuarioResults[0].id;
 
-    // 3. Actualizamos la contraseña del usuario
-    await db.query("UPDATE usuarios SET password = ? WHERE id = ?", [
-      nueva_password.trim(),
-      idUsuario,
-    ]);
+    await db.query(
+      "UPDATE usuarios SET password = ? WHERE id = ? AND id_organizacion = ?",
+      [nueva_password.trim(), idUsuario, idOrganizacion],
+    );
 
     res.json({
-      mensaje: "¡Contraseña actualizada con éxito! Ya puedes iniciar sesión.",
+      mensaje: "¡Contraseña actualizada con éxito! Ya podés iniciar sesión.",
     });
   } catch (err) {
     console.error("❌ Error en recuperación de contraseña:", err);
@@ -178,86 +205,103 @@ router.post("/recuperar", async (req, res) => {
 // ==========================================
 // RUTA PARA ASIGNAR ROL / USUARIO A UNA PERSONA EXISTENTE
 // ==========================================
-router.post("/crear-usuario", async (req, res) => {
-  const { id_persona, nombre_usuario, password, rol } = req.body;
+router.post(
+  "/crear-usuario",
+  verificarToken,
+  autorizarRoles("Administrador"),
+  async (req, res) => {
+    const { id_persona, nombre_usuario, password, rol } = req.body;
 
-  if (!id_persona || !nombre_usuario || !password || !rol) {
-    return res.status(400).json({ error: "Todos los campos son obligatorios" });
-  }
-
-  try {
-    // 1. Verificamos que la persona exista y traemos su email
-    const [personaCheck] = await db.query(
-      "SELECT id, email FROM personas WHERE id = ?",
-      [id_persona],
-    );
-
-    if (personaCheck.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "La persona seleccionada no existe." });
-    }
-
-    const persona = personaCheck[0];
-
-    // 2. Validamos obligatoriamente que tenga un email cargado (necesario para recuperación)
-    if (!persona.email || persona.email.trim() === "") {
-      return res.status(400).json({
-        error:
-          "La persona seleccionada no tiene un correo electrónico registrado. Es obligatorio para poder recuperar la contraseña.",
-      });
-    }
-
-    // 3. Insertamos el usuario vinculado a esa persona
-    const query =
-      "INSERT INTO usuarios (id_persona, nombre_usuario, password, rol) VALUES (?, ?, ?, ?)";
-    await db.query(query, [
-      id_persona,
-      nombre_usuario.trim(),
-      password.trim(),
-      rol,
-    ]);
-
-    res
-      .status(201)
-      .json({ mensaje: "¡Usuario creado y rol asignado con éxito!" });
-  } catch (err) {
-    console.error("❌ Error al asignar usuario:", err);
-    if (err.code === "ER_DUP_ENTRY") {
+    if (!id_persona || !nombre_usuario || !password || !rol) {
       return res
         .status(400)
-        .json({ error: "El nombre de usuario ya se encuentra registrado." });
+        .json({ error: "Todos los campos son obligatorios" });
     }
-    res.status(500).json({ error: "Error en el servidor de base de datos" });
-  }
-});
+
+    try {
+      const [personaCheck] = await db.query(
+        "SELECT id, email FROM personas WHERE id = ? AND id_organizacion = ?",
+        [id_persona, req.idOrganizacion],
+      );
+
+      if (personaCheck.length === 0) {
+        return res
+          .status(404)
+          .json({
+            error: "La persona seleccionada no existe en tu organización.",
+          });
+      }
+
+      const persona = personaCheck[0];
+
+      if (!persona.email || persona.email.trim() === "") {
+        return res.status(400).json({
+          error:
+            "La persona seleccionada no tiene un correo electrónico registrado. Es obligatorio para poder recuperar la contraseña.",
+        });
+      }
+
+      const query =
+        "INSERT INTO usuarios (id_persona, id_organizacion, nombre_usuario, password, rol) VALUES (?, ?, ?, ?, ?)";
+      await db.query(query, [
+        id_persona,
+        req.idOrganizacion,
+        nombre_usuario.trim(),
+        password.trim(),
+        rol,
+      ]);
+
+      res
+        .status(201)
+        .json({ mensaje: "¡Usuario creado y rol asignado con éxito!" });
+    } catch (err) {
+      console.error("❌ Error al asignar usuario:", err);
+      if (err.code === "ER_DUP_ENTRY") {
+        return res
+          .status(400)
+          .json({ error: "El nombre de usuario ya se encuentra registrado." });
+      }
+      res.status(500).json({ error: "Error en el servidor de base de datos" });
+    }
+  },
+);
 
 // ==========================================
 // RUTA PARA ACTUALIZAR EL ROL DE UN USUARIO
 // ==========================================
-router.put("/actualizar-rol/:id_persona", async (req, res) => {
-  const { id_persona } = req.params;
-  const { rol } = req.body;
+router.put(
+  "/actualizar-rol/:id_persona",
+  verificarToken,
+  autorizarRoles("Administrador"),
+  async (req, res) => {
+    const { id_persona } = req.params;
+    const { rol } = req.body;
 
-  if (!rol) {
-    return res.status(400).json({ error: "El nuevo rol es obligatorio." });
-  }
-
-  try {
-    const query = "UPDATE usuarios SET rol = ? WHERE id_persona = ?";
-    const [result] = await db.query(query, [rol, id_persona]);
-
-    if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({ error: "No se encontró un usuario vinculado a esta persona." });
+    if (!rol) {
+      return res.status(400).json({ error: "El nuevo rol es obligatorio." });
     }
 
-    res.json({ mensaje: "¡Rol actualizado correctamente!" });
-  } catch (err) {
-    console.error("❌ Error al actualizar el rol:", err);
-    res.status(500).json({ error: "Error en el servidor de base de datos" });
-  }
-});
+    try {
+      const query =
+        "UPDATE usuarios SET rol = ? WHERE id_persona = ? AND id_organizacion = ?";
+      const [result] = await db.query(query, [
+        rol,
+        id_persona,
+        req.idOrganizacion,
+      ]);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          error: "No se encontró un usuario vinculado a esta persona.",
+        });
+      }
+
+      res.json({ mensaje: "¡Rol actualizado correctamente!" });
+    } catch (err) {
+      console.error("❌ Error al actualizar el rol:", err);
+      res.status(500).json({ error: "Error en el servidor de base de datos" });
+    }
+  },
+);
 
 module.exports = router;

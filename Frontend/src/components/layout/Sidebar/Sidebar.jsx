@@ -6,37 +6,64 @@ import Icon from "../../common/Icon";
 import "./Sidebar.css";
 import logoAncho from "../../../assets/logos/logo-ancho-claro.png";
 
+const leerOrganizacionLocal = () => {
+  try {
+    const raw = localStorage.getItem("organizacion");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
 export default function Sidebar({ isOpen = false, onClose = () => {} }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [nombreIglesia, setNombreIglesia] = useState("");
+  const [organizacion, setOrganizacion] = useState(() =>
+    leerOrganizacionLocal(),
+  );
+  const [nombreIglesia, setNombreIglesia] = useState(() => {
+    const org = leerOrganizacionLocal();
+    return org?.nombre || localStorage.getItem("nombre_iglesia") || "";
+  });
 
-  // Persistencia de Modo Oscuro: Lee el estado inicial del localStorage al cargar
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
-  // Al cargar y escuchar cambios en tiempo real del nombre de la iglesia
   useEffect(() => {
-    const iglesiaGuardada = localStorage.getItem("nombre_iglesia");
-    if (iglesiaGuardada) {
-      setNombreIglesia(iglesiaGuardada);
-    }
+    const sincronizarOrg = () => {
+      const org = leerOrganizacionLocal();
+      setOrganizacion(org);
+      const nombreActual =
+        org?.nombre || localStorage.getItem("nombre_iglesia") || "";
+      setNombreIglesia(nombreActual);
 
-    const handleStorageChange = () => {
-      const actualizacion = localStorage.getItem("nombre_iglesia");
-      if (actualizacion) {
-        setNombreIglesia(actualizacion);
+      if (org?.color_primario) {
+        document.documentElement.style.setProperty(
+          "--brand-primary",
+          org.color_primario,
+        );
+      } else {
+        document.documentElement.style.removeProperty("--brand-primary");
+      }
+
+      if (org?.color_secundario) {
+        document.documentElement.style.setProperty(
+          "--brand-secondary",
+          org.color_secundario,
+        );
+      } else {
+        document.documentElement.style.removeProperty("--brand-secondary");
       }
     };
 
-    window.addEventListener("churchNameChanged", handleStorageChange);
+    sincronizarOrg();
+    window.addEventListener("churchNameChanged", sincronizarOrg);
     return () => {
-      window.removeEventListener("churchNameChanged", handleStorageChange);
+      window.removeEventListener("churchNameChanged", sincronizarOrg);
     };
   }, []);
 
-  // Efecto para aplicar el tema en la raíz (HTML) y guardarlo en localStorage
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark-theme");
@@ -47,7 +74,6 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
     }
   }, [isDarkMode]);
 
-  // Cerrar el menú móvil al presionar Escape
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e) => {
@@ -79,6 +105,10 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
   const handleLogout = () => {
     onClose();
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("organizacion");
+    document.documentElement.style.removeProperty("--brand-primary");
+    document.documentElement.style.removeProperty("--brand-secondary");
     navigate("/login");
   };
 
@@ -87,11 +117,12 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
     setIsModalOpen(true);
   };
 
-  // Obtener iniciales para el avatar (ej. "moyanoivan" -> "MO")
   const getInitials = (name) => {
     if (!name) return "US";
     return name.substring(0, 2).toUpperCase();
   };
+
+  const logoMostrado = organizacion?.logo_url || logoAncho;
 
   return (
     <>
@@ -104,16 +135,20 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
       )}
 
       <aside className={`sidebar-container ${isOpen ? "is-open" : ""}`}>
-        {/* Título de la App, Nombre Dinámico de la Iglesia y Botón Cerrar en Móvil */}
         <div className="sidebar-header-section">
           <div className="sidebar-header-top">
             <img
-              src={logoAncho}
-              alt="Logo Gestión Congregacional"
+              src={logoMostrado}
+              alt={nombreIglesia || "Logo de la organización"}
               className="sidebar-logo-ancho"
+              onError={(e) => {
+                if (e.currentTarget.src !== logoAncho) {
+                  e.currentTarget.src = logoAncho;
+                }
+              }}
             />
             <h3 className="sidebar-app-title">
-              Version comercial en desarrollo
+              Versión comercial en desarrollo
             </h3>
             <button
               type="button"
@@ -129,7 +164,6 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
           )}
         </div>
 
-        {/* Lista de Navegación */}
         <nav className="sidebar-nav">
           <ul className="sidebar-list">
             {menuItems
@@ -150,14 +184,11 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
           </ul>
         </nav>
 
-        {/* 🌙 Botón Toggle para Modo Oscuro / Claro extraído a componente */}
         <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
 
-        {/* Tarjeta de Perfil de Usuario */}
         <div className="sidebar-profile-card">
           {user ? (
             <>
-              {/* Fila superior: Avatar + Nombre y Rol */}
               <div className="sidebar-profile-info">
                 <div className="sidebar-avatar">
                   {getInitials(user.nombre_usuario)}
@@ -168,10 +199,8 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
                 </div>
               </div>
 
-              {/* Línea divisoria sutil */}
               <div className="sidebar-divider" />
 
-              {/* Fila inferior: Botones de perfil y salir */}
               <div className="sidebar-actions-row">
                 <button
                   type="button"

@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const asistenciaRoutes = require("./routes/asistenciaRoutes");
 const ministerioRoutes = require("./routes/ministerioRoutes");
 const backupRoutes = require("./routes/backupRoutes");
+const organizacionRoutes = require("./routes/organizacionRoutes");
 
 // 👈 Importamos el servicio de respaldos automáticos diarios con node-cron
 require("./services/cronBackup");
@@ -29,6 +30,7 @@ app.use("/api/personas", require("./routes/memberRoutes"));
 app.use("/api/asistencia", asistenciaRoutes);
 app.use("/api/ministerios", ministerioRoutes);
 app.use("/api/backup", backupRoutes);
+app.use("/api/organizacion", organizacionRoutes);
 
 // Ruta hacia el build del Frontend (Backend/src -> ../../Frontend/dist)
 const frontendDistPath = path.join(__dirname, "../../Frontend/dist");

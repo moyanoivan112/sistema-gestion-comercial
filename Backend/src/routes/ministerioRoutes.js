@@ -1,6 +1,7 @@
-// src/routes/ministerioRoutes.js
 const express = require("express");
 const router = express.Router();
+const verificarToken = require("../middlewares/authMiddleware");
+const autorizarRoles = require("../middlewares/roleMiddleware");
 const {
   getMinisterios,
   getMinisteriosByPersona,
@@ -17,19 +18,21 @@ const {
   getPersonasByMinisterio,
 } = require("../controllers/ministerioController");
 
+router.use(verificarToken);
+
 // Rutas generales de ministerios
 router.get("/", getMinisterios);
-router.post("/", crearMinisterio);
-router.put("/:id", actualizarMinisterio);
+router.post("/", autorizarRoles("Administrador"), crearMinisterio);
+router.put("/:id", autorizarRoles("Administrador"), actualizarMinisterio);
 
-// 👈 2. NUEVA RUTA: Obtener personas de un ministerio específico por ID
+// Obtener personas de un ministerio específico por ID
 router.get("/:idMinisterio/personas", getPersonasByMinisterio);
 
-// Rutas de asignación por persona (excepciones individuales)
+// Rutas de asignación por persona
 router.get("/persona/:idPersona", getMinisteriosByPersona);
 router.put("/persona/:idPersona", actualizarMinisteriosPersona);
 
-// Rutas: Escuela Bíblica y Líderes con Alumnos a cargo (Módulo Asistencia)
+// Rutas: Líderes y personas a cargo (Módulo Asistencia)
 router.get("/:idMinisterio/lideres", getLideresByMinisterio);
 router.get("/:idMinisterio/lideres/:idLider/alumnos", getAlumnosByLider);
 router.post("/:idMinisterio/lideres/:idLider/alumnos", asignarAlumnoLider);
@@ -38,11 +41,16 @@ router.delete(
   quitarAlumnoLider,
 );
 
-// Rutas de Configuración de Profesores (Módulo Settings)
+// Rutas de Configuración de Líderes/Profesores
 router.get("/:idMinisterio/config-lideres", getLideresConfigByMinisterio);
-router.post("/:idMinisterio/config-lideres", asignarLiderMinisterio);
+router.post(
+  "/:idMinisterio/config-lideres",
+  autorizarRoles("Administrador"),
+  asignarLiderMinisterio,
+);
 router.delete(
   "/:idMinisterio/config-lideres/:idPersona",
+  autorizarRoles("Administrador"),
   quitarLiderMinisterio,
 );
 

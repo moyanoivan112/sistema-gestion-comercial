@@ -1,10 +1,10 @@
-// src/pages/RoleAssignment/RoleAssignment.jsx
-
 import { useState, useEffect } from "react";
 import SearchBar from "../Registry/components/SearchBar";
 import UsersTable from "./components/RoleAssignmentList";
 import api from "../../services/api";
 import "./RoleAssignment.css";
+
+const ROLES_DISPONIBLES = ["Líder", "Pastor", "Administrador"];
 
 export default function RoleAssignment() {
   const [members, setMembers] = useState([]);
@@ -28,7 +28,7 @@ export default function RoleAssignment() {
   const fetchMembers = async () => {
     try {
       const response = await api.get("/personas");
-      setMembers(response.data);
+      setMembers(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       console.error("Error al cargar personas:", err);
       setError("No se pudo cargar la lista de la congregación.");
@@ -39,7 +39,7 @@ export default function RoleAssignment() {
     fetchMembers();
   }, []);
 
-  // 1. FILTRAR SOLO LOS QUE TIENEN ROL PARA LA TABLA PRINCIPAL
+  // 1. Filtrar solo los que tienen rol para la tabla principal
   const membersWithRole = members.filter((member) => member.rol_sistema);
 
   const filteredSystemUsers = membersWithRole.filter((member) => {
@@ -47,42 +47,44 @@ export default function RoleAssignment() {
       `${member.nombre || ""} ${member.apellido || ""}`.toLowerCase();
     return (
       fullName.includes(searchTerm.toLowerCase()) ||
-      (member.dni && member.dni.includes(searchTerm))
+      (member.dni && String(member.dni).includes(searchTerm))
     );
   });
 
-  // 2. FILTRAR TODAS LAS PERSONAS PARA EL MODAL DE BÚSQUEDA GENERAL (Nuevos accesos)
+  // 2. Filtrar todas las personas para el modal de búsqueda general
   const filteredAllPeople = members.filter((member) => {
     const fullName =
       `${member.nombre || ""} ${member.apellido || ""}`.toLowerCase();
     return (
       fullName.includes(generalSearchTerm.toLowerCase()) ||
-      (member.dni && member.dni.includes(generalSearchTerm))
+      (member.dni && String(member.dni).includes(generalSearchTerm))
     );
   });
 
   const handleOpenAssignModal = (person) => {
     setSelectedPerson(person);
     setRol(person.rol_sistema || "Líder");
-    setNombreUsuario("");
+    setNombreUsuario(person.nombre_usuario || "");
     setPassword("");
     setEmailAsignacion(person.email || "");
     setMensaje("");
     setError("");
-    setShowSearchModal(false); // Cerramos el modal de búsqueda general si estaba abierto
+    setShowSearchModal(false);
   };
 
   const handleSaveUserOrRole = async (e) => {
     e.preventDefault();
+    if (!selectedPerson) return;
+
     setError("");
     setMensaje("");
     setLoading(true);
 
     try {
-      if (emailAsignacion !== selectedPerson.email) {
+      if (emailAsignacion !== (selectedPerson.email || "")) {
         await api.put(`/personas/${selectedPerson.id}`, {
           ...selectedPerson,
-          email: emailAsignacion,
+          email: emailAsignacion.trim(),
         });
       }
 
@@ -92,9 +94,9 @@ export default function RoleAssignment() {
       } else {
         const payload = {
           id_persona: selectedPerson.id || selectedPerson.id_persona,
-          nombre_usuario: nombreUsuario,
-          password: password,
-          rol: rol,
+          nombre_usuario: nombreUsuario.trim(),
+          password: password.trim(),
+          rol,
         };
 
         await api.post("/auth/crear-usuario", payload);
@@ -104,7 +106,7 @@ export default function RoleAssignment() {
       setTimeout(() => {
         setSelectedPerson(null);
         fetchMembers();
-      }, 1500);
+      }, 1200);
     } catch (err) {
       const errorMsg =
         err.response?.data?.error ||
@@ -129,7 +131,6 @@ export default function RoleAssignment() {
       {mensaje && <div className="alert-success">{mensaje}</div>}
       {error && <div className="error-alert">{error}</div>}
 
-      {/* Barra superior con buscador y botón de asignación */}
       <div className="role-toolbar">
         <div className="role-search-wrapper">
           <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
@@ -146,10 +147,8 @@ export default function RoleAssignment() {
         </button>
       </div>
 
-      {/* Tabla principal: Muestra ÚNICAMENTE a los que tienen rol */}
       <UsersTable data={filteredSystemUsers} onAssign={handleOpenAssignModal} />
 
-      {/* MODAL 1: Búsqueda general para seleccionar a alguien sin rol */}
       {showSearchModal && (
         <div className="modal-overlay">
           <div className="modal-content role-search-modal-content">
@@ -219,7 +218,6 @@ export default function RoleAssignment() {
         </div>
       )}
 
-      {/* MODAL 2: Formulario para crear/editar el rol y contraseña */}
       {selectedPerson && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -264,8 +262,11 @@ export default function RoleAssignment() {
 
                 <label>Rol en el Sistema:</label>
                 <select value={rol} onChange={(e) => setRol(e.target.value)}>
-                  <option value="Líder">Líder</option>
-                  <option value="Administrador">Administrador</option>
+                  {ROLES_DISPONIBLES.map((nombreRol) => (
+                    <option key={nombreRol} value={nombreRol}>
+                      {nombreRol}
+                    </option>
+                  ))}
                 </select>
               </div>
 

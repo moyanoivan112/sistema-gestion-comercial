@@ -1,4 +1,3 @@
-// src/pages/Login/Login.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RecuperarPassword from "./components/RecuperarPassword";
@@ -8,13 +7,12 @@ import "./Login.css";
 export default function Login() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [password, setPassword] = useState("");
-  const [isReady, setIsReady] = useState(false); // <--- Truco anti-Chrome
+  const [isReady, setIsReady] = useState(false);
   const [isRecovering, setIsRecovering] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Forzamos un micro-retraso para que Chrome no alcance a autocompletar
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 100);
     return () => clearTimeout(timer);
@@ -26,22 +24,26 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Usamos la instancia centralizada en lugar de fetch con localhost
       const response = await api.post("/auth/login", {
         nombre_usuario: nombreUsuario.trim(),
         password: password.trim(),
       });
 
-      const data = response.data; // Axios guarda la respuesta en .data
+      const data = response.data;
 
-      // Guardamos el token y los datos del usuario en el localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.usuario));
 
-      // Redirigimos al usuario a la página de inicio
+      if (data.organizacion) {
+        localStorage.setItem("organizacion", JSON.stringify(data.organizacion));
+        if (data.organizacion.nombre) {
+          localStorage.setItem("nombre_iglesia", data.organizacion.nombre);
+        }
+        window.dispatchEvent(new Event("churchNameChanged"));
+      }
+
       navigate("/inicio");
     } catch (err) {
-      // Axios guarda los errores del backend en err.response?.data
       const errorMsg =
         err.response?.data?.error ||
         err.message ||
@@ -68,7 +70,6 @@ export default function Login() {
         <form onSubmit={handleLogin} className="login-form">
           {error && <div className="error-alert">{error}</div>}
 
-          {/* Renderizamos los inputs solo cuando isReady pasa a true */}
           {isReady && (
             <>
               <div className="form-group">

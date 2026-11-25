@@ -9,8 +9,8 @@ const verificarToken = (req, res, next) => {
       .json({ error: "Acceso denegado. No se proporcionó un token." });
   }
 
-  // El formato suele ser "Bearer TOKEN_AQUÍ"
-  const token = authHeader.split(" ")[1];
+  const parts = authHeader.split(" ");
+  const token = parts.length === 2 && parts[0] === "Bearer" ? parts[1] : null;
 
   if (!token) {
     return res.status(401).json({ error: "Token mal formado." });
@@ -18,10 +18,11 @@ const verificarToken = (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified; // Guardamos los datos del usuario decodificados en la petición
-    next(); // Permite que la petición continúe hacia su destino
+    req.user = verified; // { id, rol, id_organizacion, iat, exp }
+    req.idOrganizacion = verified.id_organizacion ?? 1;
+    next();
   } catch (err) {
-    res.status(403).json({ error: "Token inválido o expirado." });
+    res.status(401).json({ error: "Token inválido o expirado." });
   }
 };
 

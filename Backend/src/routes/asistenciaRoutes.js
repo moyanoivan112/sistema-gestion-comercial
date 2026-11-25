@@ -3,9 +3,9 @@ const router = express.Router();
 const {
   getPersonasParaAsistencia,
   guardarAsistencia,
-  getHistorialAsistencia, // 👈 Importarla
-  verificarAsistencia, // 👈 Nueva función
-  registrarAsistencia, // 👈 Nueva función
+  getHistorialAsistencia,
+  verificarAsistencia,
+  registrarAsistencia,
   getAusenciasProlongadas,
   getFechasAsistenciasRegistradas,
   obtenerComparativaReunion,
@@ -13,19 +13,15 @@ const {
 
 const verificarToken = require("../middlewares/authMiddleware");
 
-// Rutas para asistencia
+router.use(verificarToken);
+
 router.get("/personas", getPersonasParaAsistencia);
-router.get("/historial", getHistorialAsistencia); // 👈 Nueva ruta para ver el historial
-router.get("/verificar", verificarAsistencia); // 👈 Nueva ruta para verificar asistencia
-router.post("/", registrarAsistencia); // 👈 Nueva ruta para registrar asistencia
-// Registra la ruta GET para las ausencias
+router.get("/historial", getHistorialAsistencia);
+router.get("/verificar", verificarAsistencia);
+router.post("/", registrarAsistencia);
+router.put("/guardar", guardarAsistencia);
 router.get("/ausencias", getAusenciasProlongadas);
 router.get("/fechas-registradas", getFechasAsistenciasRegistradas);
-
-router.get(
-  "/comparativa/:tipoReunion",
-  verificarToken,
-  obtenerComparativaReunion,
-);
+router.get("/comparativa/:tipoReunion", obtenerComparativaReunion);
 
 module.exports = router;

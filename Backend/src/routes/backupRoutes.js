@@ -5,12 +5,11 @@ const {
   importarBackup,
 } = require("../controllers/backupController");
 const verificarToken = require("../middlewares/authMiddleware");
+const autorizarRoles = require("../middlewares/roleMiddleware");
 
-// Opcional: Si tienes un middleware específico para validar roles (ej. solo admin),
-// puedes agregarlo aquí junto con verificarToken.
-// Por seguridad, exigimos que la petición esté autenticada con token válido:
+router.use(verificarToken);
 
-router.get("/exportar", verificarToken, exportarBackup);
-router.post("/importar", verificarToken, importarBackup);
+router.get("/exportar", autorizarRoles("Administrador"), exportarBackup);
+router.post("/importar", autorizarRoles("Administrador"), importarBackup);
 
 module.exports = router;
