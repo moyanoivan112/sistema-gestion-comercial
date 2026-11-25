@@ -39,17 +39,41 @@ export default function BirthdaysWidget({ members = [] }) {
     "dic",
   ];
 
+  const getDiaNacimiento = (fechaStr) => {
+    const [, , diaStr] = String(fechaStr).split("T")[0].split("-");
+    return parseInt(diaStr, 10);
+  };
+
   // Filtrar miembros que cumplen años en el mes actual
-  const cumpleañeros = members.filter((member) => {
+  const cumpleaneros = members.filter((member) => {
     if (!member.fecha_nacimiento) return false;
-    const [_, mesNac] = member.fecha_nacimiento.split("T")[0].split("-");
+    const [, mesNac] = String(member.fecha_nacimiento).split("T")[0].split("-");
     return parseInt(mesNac, 10) - 1 === mesActual;
   });
 
-  // Ordenar por día del mes
-  cumpleañeros.sort((a, b) => {
-    const diaA = parseInt(a.fecha_nacimiento.split("-")[2], 10);
-    const diaB = parseInt(b.fecha_nacimiento.split("-")[2], 10);
+  // Ordenar: primero hoy, luego próximos (más cercanos primero), y al final los que ya pasaron
+  cumpleaneros.sort((a, b) => {
+    const diaA = getDiaNacimiento(a.fecha_nacimiento);
+    const diaB = getDiaNacimiento(b.fecha_nacimiento);
+
+    const diffA = diaA - diaActual; // 0 = hoy, > 0 = próximo, < 0 = ya pasó
+    const diffB = diaB - diaActual;
+
+    const getPrioridad = (diff) => {
+      if (diff === 0) return 0; // Hoy primero
+      if (diff > 0) return 1; // Próximos segundo
+      return 2; // Pasados al final
+    };
+
+    const prioA = getPrioridad(diffA);
+    const prioB = getPrioridad(diffB);
+
+    if (prioA !== prioB) return prioA - prioB;
+
+    // Dentro de próximos: menor diferencia primero (mañana antes que en 5 días)
+    if (prioA === 1) return diffA - diffB;
+
+    // Dentro de pasados: por día del mes (si preferís el más reciente primero, usá diaB - diaA)
     return diaA - diaB;
   });
 
@@ -62,25 +86,25 @@ export default function BirthdaysWidget({ members = [] }) {
         </h3>
       </header>
 
-      {cumpleañeros.length === 0 ? (
+      {cumpleaneros.length === 0 ? (
         <p className="birthdays-empty-msg">
           No hay cumpleaños registrados este mes.
         </p>
       ) : (
         <ul className="alert-list birthdays-scroll-container">
-          {cumpleañeros.map((member) => {
-            const [anioNac, mesNac, diaNacStr] = member.fecha_nacimiento
+          {cumpleaneros.map((member) => {
+            const [anioNac, mesNac] = String(member.fecha_nacimiento)
               .split("T")[0]
               .split("-");
-            const diaNac = parseInt(diaNacStr, 10);
+            const diaNac = getDiaNacimiento(member.fecha_nacimiento);
 
-            let edad = anioActual - parseInt(anioNac, 10);
+            const edad = anioActual - parseInt(anioNac, 10);
             const mesCortoStr = mesesCortos[parseInt(mesNac, 10) - 1];
 
             // Lógica de estado: ¿Ya pasó, es hoy o faltan días?
-            const yaPasou = diaNac < diaActual;
-            const esHoy = diaNac === diaActual;
             const diasFaltantes = diaNac - diaActual;
+            const yaPasou = diasFaltantes < 0;
+            const esHoy = diasFaltantes === 0;
 
             return (
               <li
